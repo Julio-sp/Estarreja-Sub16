@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Estarreja Andebol Pro</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+}
+
+header {
+  text-align:center;
+  padding:15px;
+  background:#020617;
+}
+
+header img { height:60px; }
+
+nav {
+  display:flex;
+  background:#020617;
+}
+
+nav button {
+  flex:1;
+  padding:12px;
+  border:none;
+  background:none;
+  color:white;
+  cursor:pointer;
+}
+
+nav button:hover { background:#1e293b; }
+
+.tab { display:none; padding:20px; }
+.active { display:block; }
+
+.grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+  gap:10px;
+}
+
+.card {
+  background:#1e293b;
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+}
+
+.big { font-size:22px; font-weight:bold; }
+
+.win { color:#22c55e; }
+.loss { color:#ef4444; }
+</style>
+</head>
+
+<body>
+
+<header>
+  <img src="logo.png">
+  <h2>Estarreja Andebol Clube</h2>
+</header>
+
+<nav>
+  <button onclick="tab('dashboard')">📊</button>
+  <button onclick="tab('players')">👤</button>
+  <button onclick="tab('games')">🏐</button>
+</nav>
+
+<div id="dashboard" class="tab active">
+
+<h2>Dashboard</h2>
+<p id="msg"></p>
+
+<div class="grid" id="stats"></div>
+
+<canvas id="goalsChart"></canvas>
+<canvas id="resultChart"></canvas>
+
+</div>
+
+<div id="players" class="tab">
+<h2>Jogadoras</h2>
+<div id="playersList"></div>
+</div>
+
+<div id="games" class="tab">
+<h2>Jogos</h2>
+<div id="gamesList"></div>
+</div>
+
+<script>
+
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Ip29SsNYoB99RLWmse4JBY9zmokOhLsr8-yZGk9J_7Z_kIi7lToM3KlFoMz7byKYkuLRPYy_TJ8S/pub?output=csv";
+
+const messages = [
+"💚 Juntas somos imparáveis",
+"🔥 Foco total",
+"🏐 Uma equipa, um objetivo",
+"⚡ Intensidade máxima",
+"💪 Nunca desistir"
+];
+
+function tab(name){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById(name).classList.add("active");
+  setMessage();
+}
+
+function setMessage(){
+  document.getElementById("msg").innerText =
+  messages[Math.floor(Math.random()*messages.length)];
+}
+
+setMessage();
+
+fetch(SHEET_URL)
+.then(res=>res.text())
+.then(csv=>{
+
+const rows = csv.split("\n").map(r=>r.split(","));
+
+// 🔍 encontrar linha dos nomes
+const nameRowIndex = rows.findIndex(r =>
+  r.some(cell => cell.includes("Amaral") || cell.includes("Maria"))
+);
+
+const namesRow = rows[nameRowIndex];
+
+// 🔍 encontrar linha dos golos (ex: contém números)
+const goalsRowIndex = rows.findIndex(r =>
+  r.filter(c => !isNaN(c) && c !== "").length > 5
+);
+
+const goalsRow = rows[goalsRowIndex];
+
+// 🧠 montar jogadoras
+let players = [];
+
+namesRow.forEach((name, i)=>{
+  if(name && name.length > 2){
+    const goals = Number(goalsRow[i]) || 0;
+
+    players.push({
+      name,
+      goals
+    });
+  }
+});
+
+// 🔢 total equipa
+const totalGoals = players.reduce((s,p)=>s+p.goals,0);
+
+// 📊 percentagem + ordenação
+players = players.map(p=>({
+  ...p,
+  perc: totalGoals ? ((p.goals/totalGoals)*100).toFixed(1) : 0
+}))
+.sort((a,b)=>b.goals-a.goals);
+
+// 👤 render
+const div = document.getElementById("playersList");
+div.innerHTML = "";
+
+// 🏆 TOP 3 destaque
+players.slice(0,3).forEach((p,i)=>{
+  div.innerHTML += `
+    <div class="card">
+      🏆 ${i+1}º ${p.name}<br>
+      Golos: ${p.goals}<br>
+      ${p.perc}%
+    </div>
+  `;
+});
+
+// restantes
+players.slice(3).forEach(p=>{
+  div.innerHTML += `
+    <div class="card">
+      ${p.name}<br>
+      Golos: ${p.goals}<br>
+      ${p.perc}%
+    </div>
+  `;
+});
+
+});
+
+</script>
+
+</body>
+</html>
