@@ -3,138 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estarreja Andebol Pro</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Estarreja Sub-16 Pro</title>
     <style>
-        body { margin:0; font-family:Arial, sans-serif; background:#0f172a; color:white; }
-        header { text-align:center; padding:15px; background:#020617; border-bottom: 2px solid #22c55e; }
-        header img { height:60px; margin-bottom:10px; }
-        nav { display:flex; background:#020617; sticky: top; }
-        nav button { flex:1; padding:15px; border:none; background:none; color:white; cursor:pointer; font-size: 20px; }
-        nav button:hover { background:#1e293b; }
-        .tab { display:none; padding:20px; animation: fadeIn 0.3s; }
+        body { margin:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#0f172a; color:white; }
+        header { text-align:center; padding:20px; background:#020617; border-bottom: 3px solid #22c55e; }
+        header img { height:70px; }
+        nav { display:flex; background:#020617; border-bottom: 1px solid #1e293b; }
+        nav button { flex:1; padding:15px; border:none; background:none; color:white; cursor:pointer; font-size: 18px; }
+        .tab { display:none; padding:20px; }
         .active { display:block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-bottom:20px; }
-        .card { background:#1e293b; padding:15px; border-radius:12px; text-align:center; border: 1px solid #334155; }
-        .big { font-size:22px; font-weight:bold; display:block; margin-bottom:5px; }
-        .win { color:#22c55e; font-weight:bold; }
-        #msg { text-align:center; font-style:italic; color:#94a3b8; margin-bottom:20px; }
+        .stats-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap:10px; margin-bottom:20px; }
+        .card { background:#1e293b; padding:15px; border-radius:12px; text-align:center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); }
+        .big { font-size:24px; font-weight:bold; color:#22c55e; display:block; }
+        .player-card { display: flex; justify-content: space-between; align-items: center; background:#1e293b; margin-bottom: 8px; padding: 15px; border-radius: 8px; border-left: 4px solid #22c55e; }
+        .player-info { display: flex; flex-direction: column; }
+        .player-name { font-weight: bold; font-size: 1.1em; }
+        .player-goals { font-size: 1.2em; font-weight: bold; color: #22c55e; }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="logo.png" onerror="this.src='https://via.placeholder.com/60?text=EAC'">
     <h2>Estarreja Andebol Clube</h2>
+    <div id="club-summary" style="font-size: 0.9em; color: #94a3b8;">Sub-16 Feminino</div>
 </header>
 
 <nav>
-    <button onclick="tab('dashboard')">📊</button>
-    <button onclick="tab('players')">👤</button>
-    <button onclick="tab('games')">🏐</button>
+    <button onclick="tab('dash')">📊</button>
+    <button onclick="tab('rank')">🏆</button>
 </nav>
 
-<div id="dashboard" class="tab active">
-    <p id="msg">Carregando motivação...</p>
-    <div class="grid" id="stats">
-        <div class="card">...<br>Golos</div>
-        <div class="card">...<br>Atletas</div>
+<div id="dash" class="tab active">
+    <div class="stats-grid" id="main-stats">
+        <!-- Preenchido via JS -->
     </div>
+    <div id="motivational-msg" style="text-align:center; font-style:italic; color:#22c55e;"></div>
 </div>
 
-<div id="players" class="tab">
-    <h2>Ranking de Golos</h2>
-    <div id="playersList" class="grid"></div>
-</div>
-
-<div id="games" class="tab">
-    <h2>Próximos Jogos / Resultados</h2>
-    <div class="card">Sincronizado com a Planilha</div>
+<div id="rank" class="tab">
+    <h3>Artilheiras</h3>
+    <div id="ranking-list"></div>
 </div>
 
 <script>
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Ip29SsNYoB99RLWmse4JBY9zmokOhLsr8-yZGk9J_7Z_kIi7lToM3KlFoMz7byKYkuLRPYy_TJ8S/pub?output=csv";
 
-const messages = ["💚 Juntas somos imparáveis", "🔥 Foco total", "🏐 Uma equipa, um objetivo", "⚡ Intensidade máxima", "💪 Nunca desistir"];
-
-function tab(name){
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    document.getElementById(name).classList.add("active");
-    document.getElementById("msg").innerText = messages[Math.floor(Math.random()*messages.length)];
+function tab(id) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
 }
 
-function init() {
-    tab('dashboard');
-    fetch(SHEET_URL)
-    .then(res => res.text())
-    .then(csv => {
-        const separator = csv.includes(';') ? ';' : ',';
-        const rows = csv.split("\n").map(r => r.split(separator));
-        
-        // --- LÓGICA SÊNIOR DE CAPTURA ---
-        // 1. Achar a linha dos nomes (procura por nomes conhecidos ou "Nome")
-        let nameRowIndex = rows.findIndex(r => r.some(c => c.toLowerCase().includes("maria") || c.toLowerCase().includes("amaral")));
-        
-        if(nameRowIndex === -1) nameRowIndex = 0; // Fallback para primeira linha
+async function fetchData() {
+    try {
+        const response = await fetch(SHEET_URL);
+        const data = await response.text();
+        const rows = data.split('\n').map(row => row.split(','));
 
-        const names = rows[nameRowIndex].map(n => n.replace(/"/g, '').trim());
-        let playerStats = {};
+        // 1. Extrair Dados do Topo (Células E2, F2, G2, H2 do print)
+        // No CSV, os índices aproximados (ajustados conforme o print)
+        const headerRow = rows[1]; // Linha 2
+        const stats = {
+            jogos: headerRow[4] || 0,
+            vitorias: headerRow[5] || 0,
+            derrotas: headerRow[6] || 0,
+            golosM: headerRow[7] || 0
+        };
 
-        // 2. Percorrer todas as outras linhas somando os números para cada nome
-        rows.forEach((row, idx) => {
-            if(idx === nameRowIndex) return; // Pula a linha dos nomes
-            
-            row.forEach((cell, colIdx) => {
-                const name = names[colIdx];
-                if(name && name.length > 2 && !name.toLowerCase().includes("data") && !name.toLowerCase().includes("total")) {
-                    const value = parseInt(cell.replace(/[^\d]/g, '')) || 0;
-                    if(!playerStats[name]) playerStats[name] = 0;
-                    playerStats[name] += value;
+        // 2. Extrair Jogadoras e Golos (Coluna C e Coluna R)
+        // No print: Nomes começam na linha 6 (index 5) até a linha 18 (index 17)
+        let players = [];
+        for (let i = 5; i <= 18; i++) {
+            let row = rows[i];
+            if (row) {
+                let name = row[2] ? row[2].replace(/"/g, '').trim() : "";
+                let goals = row[17] ? parseInt(row[17].replace(/[^\d]/g, '')) : 0; // Coluna R é index 17
+                
+                if (name && name !== "" && name !== "Adversário") {
+                    players.push({ name, goals });
                 }
-            });
-        });
+            }
+        }
 
-        // 3. Converter para array e ordenar
-        let playersArray = Object.keys(playerStats).map(name => ({
-            name: name,
-            goals: playerStats[name]
-        })).filter(p => p.goals >= 0).sort((a,b) => b.goals - a.goals);
+        // Ordenar por golos
+        players.sort((a, b) => b.goals - a.goals);
 
-        // 4. Renderizar
-        renderApp(playersArray);
-    })
-    .catch(err => {
-        console.error(err);
-        document.getElementById("msg").innerText = "Erro ao conectar com a planilha.";
-    });
+        render(stats, players);
+    } catch (e) {
+        console.error("Erro:", e);
+    }
 }
 
-function renderApp(players) {
-    const totalGoals = players.reduce((s, p) => s + p.goals, 0);
-    
-    // Stats Dashboard
-    document.getElementById("stats").innerHTML = `
-        <div class="card"><span class="big win">${totalGoals}</span>Golos Totais</div>
-        <div class="card"><span class="big">${players.length}</span>Jogadoras</div>
+function render(stats, players) {
+    // Render Dash
+    const totalGolosEquipa = players.reduce((sum, p) => sum + p.goals, 0);
+    document.getElementById('main-stats').innerHTML = `
+        <div class="card"><span class="big">${stats.jogos}</span>Jogos</div>
+        <div class="card"><span class="big">${stats.vitorias}</span>Vitórias</div>
+        <div class="card"><span class="big">${totalGolosEquipa}</span>Golos</div>
     `;
 
-    // Lista de Jogadoras
-    const list = document.getElementById("playersList");
+    // Render Ranking
+    const list = document.getElementById('ranking-list');
     list.innerHTML = "";
     players.forEach((p, i) => {
         const medal = i === 0 ? "🥇 " : i === 1 ? "🥈 " : i === 2 ? "🥉 " : "";
         list.innerHTML += `
-            <div class="card">
-                <span class="big">${medal}${p.name}</span>
-                <span class="win">${p.goals} Golos</span><br>
-                <small>${totalGoals ? ((p.goals/totalGoals)*100).toFixed(1) : 0}% do total</small>
+            <div class="player-card">
+                <div class="player-info">
+                    <span class="player-name">${medal}${p.name}</span>
+                </div>
+                <div class="player-goals">${p.goals}</div>
             </div>
         `;
     });
+
+    const msgs = ["💚 Juntas somos imparáveis", "🔥 Foco total", "🏐 Uma equipa, um objetivo"];
+    document.getElementById('motivational-msg').innerText = msgs[Math.floor(Math.random()*msgs.length)];
 }
 
-init();
+fetchData();
+setInterval(fetchData, 30000); // Atualiza a cada 30 segundos
 </script>
+
 </body>
 </html>
