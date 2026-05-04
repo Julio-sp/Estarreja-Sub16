@@ -143,25 +143,46 @@ function checkLogin() {
 }
 
 async function loadData() {
-    // Aqui simularemos dados enquanto você não coloca os links CSV
-    // Quando tiver os links, usaremos fetch(LINKS.aba).then(res => res.text())...
-    
-    // DADOS MOCK PARA TESTE (O sistema preencherá com seu Sheets)
-    DB.atletas = [
-        { nome: "Joana Amaral", pos: "Ponta", num: "79", nasc: "10/05/2009", foto: "https://via.placeholder.com/100" },
-        { nome: "Maria Lima", pos: "Central", num: "36", nasc: "22/08/2008", foto: "" }
-    ];
-    
-    DB.jogos = [
-        { id: "1", adv: "Nelas", local: "Fora", gEAC: 22, gADV: 35, p1E: 11, p1A: 18, m7P: 7, m7GP: 3, m7C: 1, m7GC: 1 }
-    ];
+    try {
+        // Carregar Aba Atletas
+        const resAtletas = await fetch(LINKS.atletas);
+        const csvAtletas = await resAtletas.text();
+        DB.atletas = parseCSV(csvAtletas);
 
-    DB.scout = [
-        { jogoId: "1", atleta: "Joana Amaral", gols: 7, excl: 1, conv: "Sim" },
-        { jogoId: "1", atleta: "Maria Lima", gols: 10, excl: 0, conv: "Sim" }
-    ];
+        // Carregar Aba Jogos (Garanta que o link em LINKS.jogos esteja correto)
+        const resJogos = await fetch(LINKS.jogos);
+        const csvJogos = await resJogos.text();
+        DB.jogos = parseCSV(csvJogos);
 
-    renderAll();
+        // Carregar Aba Scout (Garanta que o link em LINKS.scout esteja correto)
+        const resScout = await fetch(LINKS.scout);
+        const csvScout = await resScout.text();
+        DB.scout = parseCSV(csvScout);
+
+        renderAll();
+    } catch (e) {
+        console.error("Erro ao carregar dados da planilha:", e);
+        document.getElementById('listaAtletas').innerHTML = "Erro ao carregar dados. Verifique os links CSV.";
+    }
+}
+
+// Esta função transforma o texto do Google Sheets em dados para o site
+function parseCSV(text) {
+    const separator = text.includes(';') ? ';' : ',';
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length < 2) return [];
+
+    const headers = lines[0].split(separator).map(h => h.trim().replace(/"/g, ''));
+    
+    return lines.slice(1).map(line => {
+        const values = line.split(separator);
+        let obj = {};
+        headers.forEach((header, i) => {
+            let val = values[i] ? values[i].replace(/"/g, "").trim() : "";
+            obj[header] = val;
+        });
+        return obj;
+    }).filter(item => item.Nome || item.Adversário || item.Nome_Atleta);
 }
 
 function renderAll() {
