@@ -84,33 +84,46 @@ async function startApp() {
         const sep = csv.includes(';') ? ';' : ',';
         const rows = csv.split('\n').map(r => r.split(sep));
 
-        // Dados do topo (APP1.jpg)
-        const headerStats = rows[1]; 
-        const clubSummary = {
-            jogos: headerStats[4] || "0",
-            vitorias: headerStats[5] || "0",
-            golosMarcados: headerStats[7] || "0"
-        };
-
-        // Dados das Jogadoras (Coluna C=2 e Coluna R=17 | Linhas 6-18)
+        // LOCALIZADOR SÊNIOR: Procura a linha onde realmente começam as jogadoras
+        // (Baseado nos seus nomes na planilha APP1.jpg)
+        const startIdx = rows.findIndex(r => r.some(c => c.includes("Ana") || c.includes("Ariana") || c.includes("Clara")));
+        
         let players = [];
-        for (let i = 5; i <= 17; i++) {
-            let row = rows[i];
-            if (row && row[2]) {
-                let name = row[2].replace(/"/g, '').trim();
-                let goals = parseInt(row[17]) || 0;
-                // Evita pegar linhas vazias ou de cabeçalho
-                if(name && name.length > 2 && name !== "Adversário") {
-                    players.push({ name, goals });
+        if (startIdx !== -1) {
+            // Varre as 20 linhas seguintes ao início para garantir que pega todas
+            for (let i = startIdx; i < startIdx + 20; i++) {
+                let row = rows[i];
+                // Verifica se a Coluna C (índice 2) tem um nome válido
+                if (row && row[2] && row[2].length > 2) {
+                    let name = row[2].replace(/"/g, '').trim();
+                    
+                    // Pega o golo na Coluna R (índice 17) e limpa qualquer símbolo
+                    let goalsRaw = row[17] ? row[17].replace(/[^\d]/g, '') : "0";
+                    let goals = parseInt(goalsRaw) || 0;
+                    
+                    if(name !== "Adversário" && name !== "Nome") {
+                        players.push({ name, goals });
+                    }
                 }
             }
         }
+
+        // Dados do Resumo (Jogos e Vitórias - Linha 2 do CSV)
+        const headerStats = rows[1] || [];
+        const clubSummary = {
+            jogos: headerStats[4] ? headerStats[4].replace(/[^\d]/g, '') : "0",
+            vitorias: headerStats[5] ? headerStats[5].replace(/[^\d]/g, '') : "0"
+        };
 
         players.sort((a, b) => b.goals - a.goals);
         updateUI(clubSummary, players);
         document.getElementById('loading-screen').style.display = 'none';
 
     } catch (err) {
+        console.error("Erro na leitura:", err);
+        document.getElementById('loading-screen').innerText = "Erro ao ler dados.";
+    }
+} catch (err) {
         document.getElementById('loading-screen').innerText = "Falha ao ler planilha. Verifique a internet.";
     }
 }
