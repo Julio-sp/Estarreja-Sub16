@@ -3,95 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estarreja EAC - App</title>
+    <title>EAC Scout Pro v2.0</title>
     <style>
-        body { margin:0; font-family: sans-serif; background:#f8fafc; color:#334155; }
-        header { text-align:center; padding:20px; background:white; border-bottom: 4px solid #16a34a; }
-        header img { height: 80px; }
-        nav { display:flex; background:white; border-bottom: 1px solid #e2e8f0; sticky: top; }
-        nav button { flex:1; padding:15px; border:none; background:none; font-size: 1.2rem; cursor:pointer; }
-        .tab { display:none; padding:20px; max-width: 500px; margin: auto; }
-        .active { display:block; }
-        .card-stat { background:white; padding:15px; border-radius:12px; text-align:center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        .player-row { background:white; display:flex; justify-content: space-between; padding:12px; border-radius:10px; margin-bottom:8px; border: 1px solid #e2e8f0; }
-        .win { color: #16a34a; font-weight: bold; }
+        :root { --verde: #16a34a; --bg: #f8fafc; --win: #dcfce7; --loss: #fee2e2; --gold: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728); }
+        body { margin:0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #1e293b; overflow-x: hidden; }
+        
+        /* Header & Nav */
+        header { text-align:center; padding:20px; background:white; border-bottom: 4px solid var(--verde); }
+        header img { height: 60px; }
+        nav { display:flex; background:white; position: sticky; top:0; z-index:100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        nav button { flex:1; padding:15px; border:none; background:none; cursor:pointer; font-weight:bold; color:#64748b; font-size: 1.1rem; }
+        nav button.active { color: var(--verde); border-bottom: 3px solid var(--verde); }
+
+        .container { padding: 15px; max-width: 800px; margin: auto; }
+        .tab { display:none; animation: fadeIn 0.3s; }
+        .active-tab { display:block; }
+        @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+        /* EAFC CARDS */
+        .top-scorers { display: flex; justify-content: center; gap: 10px; margin: 20px 0; padding-bottom: 10px; }
+        .eafc-card { width: 100px; height: 150px; clip-path: polygon(10% 0%, 90% 0%, 100% 10%, 100% 80%, 50% 100%, 0% 80%, 0% 10%); position: relative; display: flex; flex-direction: column; align-items: center; transition: 0.3s; cursor: pointer; }
+        .eafc-card:hover { transform: scale(1.05); }
+        .rank-1 { background: var(--gold); }
+        .rank-2 { background: linear-gradient(135deg, #959595, #ffffff, #707070); }
+        .rank-3 { background: linear-gradient(135deg, #a77044, #fad6a5, #804a00); }
+        .card-ovr { position: absolute; left: 8px; top: 12px; font-weight: 900; font-size: 1.2rem; }
+        .card-img { width: 65px; height: 65px; margin-top: 15px; object-fit: cover; }
+        .card-name { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; margin-top: 5px; }
+
+        /* Lista de Jogos e Atletas */
+        .item-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; }
+        .game-win { background: var(--win); border-left: 5px solid #22c55e; }
+        .game-loss { background: var(--loss); border-left: 5px solid #ef4444; }
+
+        /* Modal / Detalhes */
+        #detailPane { position: fixed; top:0; right:-100%; width:100%; height:100%; background:white; z-index:200; transition: 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); overflow-y: auto; }
+        #detailPane.open { right:0; }
+        .close-bar { padding: 20px; font-weight: bold; color: var(--verde); cursor: pointer; display: flex; align-items: center; gap: 10px; background: #f1f5f9; }
+
+        /* Admin Layout */
+        #adminArea { display: none; }
+        .admin-login { text-align: center; padding: 40px; }
+        .admin-login input { padding: 10px; margin: 5px; border: 1px solid #ddd; border-radius: 5px; }
+
+        .footer-admin { text-align: center; padding: 30px; }
+        .admin-icon { font-size: 2rem; cursor: pointer; filter: grayscale(1); opacity: 0.5; }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="logo.png" onerror="this.src='https://via.placeholder.com/80?text=EAC'">
-    <h2>Estarreja EAC</h2>
+    <img src="logo.png" alt="EAC Logo">
 </header>
 
 <nav>
-    <button onclick="tab('dash')">📊</button>
-    <button onclick="tab('rank')">🏆</button>
+    <button onclick="showTab('jogosTab', this)" class="active">JOGOS</button>
+    <button onclick="showTab('atletasTab', this)">RANKING</button>
 </nav>
 
-<div id="loading" style="text-align:center; padding:50px;">A carregar dados...</div>
+<div class="container">
+    <!-- ABA JOGOS -->
+    <div id="jogosTab" class="tab active-tab">
+        <h3 style="color: var(--verde)">Calendário e Resultados</h3>
+        <div id="listaJogos"></div>
+    </div>
 
-<div id="dash" class="tab">
-    <div id="summary" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;"></div>
+    <!-- ABA ATLETAS -->
+    <div id="atletasTab" class="tab">
+        <div class="top-scorers" id="top3"></div>
+        <h3 style="color: var(--verde)">Estatísticas Individuais</h3>
+        <div id="listaAtletas"></div>
+    </div>
+
+    <!-- ÁREA ADMIN (PROTEGIDA) -->
+    <div id="adminTab" class="tab">
+        <div id="adminLogin" class="admin-login">
+            <h3>Acesso Técnico</h3>
+            <input type="text" id="user" placeholder="Login"><br>
+            <input type="password" id="pass" placeholder="Senha"><br>
+            <button onclick="checkLogin()" style="background: var(--verde); color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-top: 10px;">Entrar</button>
+        </div>
+        <div id="adminArea">
+            <h3 style="color: var(--verde)">Painel de Aproveitamento Técnico</h3>
+            <div id="adminStats"></div>
+        </div>
+    </div>
+
+    <div class="footer-admin">
+        <span class="admin-icon" onclick="showTab('adminTab')">🤾‍♀️</span>
+    </div>
 </div>
 
-<div id="rank" class="tab">
-    <div id="ranking-list"></div>
+<!-- PAINEL LATERAL DE DETALHES -->
+<div id="detailPane">
+    <div class="close-bar" onclick="closeDetail()"> ⟵ VOLTAR </div>
+    <div id="detailBody" style="padding: 20px;"></div>
 </div>
 
 <script>
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Ip29SsNYoB99RLWmse4JBY9zmokOhLsr8-yZGk9J_7Z_kIi7lToM3KlFoMz7byKYkuLRPYy_TJ8S/pub?output=csv";
+// LINKS DAS ABAS CSV (Substitua pelos seus links do 'Publicar na Web')
+const LINKS = {
+    atletas: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
+    jogos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
+    scout: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv"
+};
 
-function tab(id) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-}
+let DB = { atletas: [], jogos: [], scout: [] };
 
-async function load() {
-    try {
-        const res = await fetch(SHEET_URL);
-        const text = await res.text();
-        const rows = text.split('\n').map(r => r.split(text.includes(';') ? ';' : ','));
-
-        let players = [];
-        // Varre a planilha à procura de nomes (Coluna C = índice 2)
-        rows.forEach((row, index) => {
-            if (index > 4) { // Pula o cabeçalho
-                let name = row[2] ? row[2].replace(/"/g, '').trim() : "";
-                let goals = row[17] ? parseInt(row[17].replace(/[^\d]/g, '')) : 0;
-                
-                if (name && name.length > 2 && name !== "Adversário" && name !== "Total") {
-                    players.push({ name, goals });
-                }
-            }
-        });
-
-        players.sort((a,b) => b.goals - a.goals);
-        
-        // UI Dashboard
-        const totalGolos = players.reduce((s, p) => s + p.goals, 0);
-        document.getElementById('summary').innerHTML = `
-            <div class="card-stat"><b>${rows[1][4] || 0}</b><br><small>Jogos</small></div>
-            <div class="card-stat"><b>${rows[1][5] || 0}</b><br><small>Vits</small></div>
-            <div class="card-stat"><b>${totalGolos}</b><br><small>Golos</small></div>
-        `;
-
-        // UI Ranking
-        const list = document.getElementById('ranking-list');
-        list.innerHTML = "";
-        players.forEach((p, i) => {
-            list.innerHTML += `<div class="player-row"><span>${i+1}º ${p.name}</span><span class="win">${p.goals}</span></div>`;
-        });
-
-        document.getElementById('loading').style.display = 'none';
-        tab('dash');
-
-    } catch (e) {
-        document.getElementById('loading').innerText = "Erro ao carregar dados. Verifique a planilha.";
+function showTab(id, btn) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active-tab'));
+    document.getElementById(id).classList.add('active-tab');
+    if(btn) {
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
     }
 }
 
-load();
+function closeDetail() { document.getElementById('detailPane').classList.remove('open'); }
+
+// CÁLCULO DE IDADE AUTOMÁTICO
+function calcularIdade(dataNasc) {
+    if(!dataNasc) return "?";
+    const partes = dataNasc.split('/');
+    const nascimento = new Date(partes[2], partes[1] - 1, partes[0]);
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const m = hoje.getMonth() - nascimento.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) idade--;
+    return idade;
+}
+
+// LOGIN ADMIN
+function checkLogin() {
+    if(document.getElementById('user').value === 'admin' && document.getElementById('pass').value === 'admin') {
+        document.getElementById('adminLogin').style.display = 'none';
+        document.getElementById('adminArea').style.display = 'block';
+        renderAdmin();
+    } else { alert("Acesso negado!"); }
+}
+
+async function loadData() {
+    // Aqui simularemos dados enquanto você não coloca os links CSV
+    // Quando tiver os links, usaremos fetch(LINKS.aba).then(res => res.text())...
+    
+    // DADOS MOCK PARA TESTE (O sistema preencherá com seu Sheets)
+    DB.atletas = [
+        { nome: "Joana Amaral", pos: "Ponta", num: "79", nasc: "10/05/2009", foto: "https://via.placeholder.com/100" },
+        { nome: "Maria Lima", pos: "Central", num: "36", nasc: "22/08/2008", foto: "" }
+    ];
+    
+    DB.jogos = [
+        { id: "1", adv: "Nelas", local: "Fora", gEAC: 22, gADV: 35, p1E: 11, p1A: 18, m7P: 7, m7GP: 3, m7C: 1, m7GC: 1 }
+    ];
+
+    DB.scout = [
+        { jogoId: "1", atleta: "Joana Amaral", gols: 7, excl: 1, conv: "Sim" },
+        { jogoId: "1", atleta: "Maria Lima", gols: 10, excl: 0, conv: "Sim" }
+    ];
+
+    renderAll();
+}
+
+function renderAll() {
+    renderJogos();
+    renderRanking();
+}
+
+function renderJogos() {
+    const list = document.getElementById('listaJogos');
+    list.innerHTML = DB.jogos.map(j => {
+        const win = j.gEAC > j.gADV;
+        return `
+        <div class="item-card ${win ? 'game-win' : 'game-loss'}" onclick="openJogo(${j.id})">
+            <div>
+                <strong>EAC ${j.gEAC} x ${j.gADV} ${j.adv}</strong><br>
+                <small>${j.local} | Scout completo ⭢</small>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderRanking() {
+    const totalGolsEquipe = DB.scout.reduce((acc, s) => acc + parseInt(s.gols), 0);
+    
+    // Agrupar gols por atleta
+    let rank = DB.atletas.map(a => {
+        const scoutAtleta = DB.scout.filter(s => s.atleta === a.nome);
+        const totalGols = scoutAtleta.reduce((acc, s) => acc + parseInt(s.gols), 0);
+        const totalJogos = scoutAtleta.filter(s => s.conv === "Sim").length;
+        return { ...a, totalGols, totalJogos, perc: ((totalGols/totalGolsEquipe)*100).toFixed(1) };
+    }).sort((a,b) => b.totalGols - a.totalGols);
+
+    // Top 3 EAFC
+    document.getElementById('top3').innerHTML = rank.slice(0,3).map((p, i) => `
+        <div class="eafc-card rank-${i+1}" onclick="openAtleta('${p.nome}')">
+            <div class="card-ovr">${p.totalGols}</div>
+            <img class="card-img" src="${p.foto || 'https://via.placeholder.com/70?text=EAC'}">
+            <div class="card-name">${p.nome.split(' ')[0]}</div>
+        </div>
+    `).join('');
+
+    // Lista Geral
+    document.getElementById('listaAtletas').innerHTML = rank.map((p, i) => `
+        <div class="item-card" onclick="openAtleta('${p.nome}')">
+            <span>${i+1}º ${p.nome}</span>
+            <strong style="color: var(--verde)">${p.totalGols} Gols</strong>
+        </div>
+    `).join('');
+}
+
+function openAtleta(nome) {
+    const a = DB.atletas.find(x => x.nome === nome);
+    const sAtleta = DB.scout.filter(s => s.atleta === nome);
+    const gols = sAtleta.reduce((acc, s) => acc + parseInt(s.gols), 0);
+    const jogos = sAtleta.filter(s => s.conv === "Sim").length;
+    
+    document.getElementById('detailBody').innerHTML = `
+        <div style="text-align:center">
+            <img src="${a.foto || 'https://via.placeholder.com/100'}" style="width:120px; height:120px; border-radius:50%; border:3px solid var(--verde); object-fit:cover;">
+            <h2>${a.nome} (#${a.num})</h2>
+            <p>${a.pos} | ${calcularIdade(a.nasc)} Anos</p>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin:20px 0;">
+            <div style="background:#f1f5f9; padding:15px; border-radius:10px; text-align:center;">
+                <small>Média/Jogo</small><br><strong>${(gols/jogos || 0).toFixed(1)}</strong>
+            </div>
+            <div style="background:#f1f5f9; padding:15px; border-radius:10px; text-align:center;">
+                <small>Total Golos</small><br><strong>${gols}</strong>
+            </div>
+        </div>
+        <h4>Desempenho por Jornada</h4>
+        ${sAtleta.map(s => `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee">
+            <span>vs ${DB.jogos.find(j => j.id === s.jogoId).adv}</span>
+            <strong>${s.gols} Gols</strong>
+        </div>`).join('')}
+    `;
+    document.getElementById('detailPane').classList.add('open');
+}
+
+function openJogo(id) {
+    const j = DB.jogos.find(x => x.id == id);
+    const convocadas = DB.scout.filter(s => s.jogoId == id && s.conv === "Sim");
+
+    document.getElementById('detailBody').innerHTML = `
+        <h3>EAC ${j.gEAC} x ${j.gADV} ${j.adv}</h3>
+        <p>${j.local}</p>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; background:#f1f5f9; padding:15px; border-radius:10px;">
+            <div>1ª Parte: <b>${j.p1E} - ${j.p1A}</b></div>
+            <div>7m Favor: <b>${j.m7GP}/${j.m7P}</b></div>
+            <div>7m Contra: <b>${j.m7GC}/${j.m7C}</b></div>
+        </div>
+        <h4>Scout Individual do Jogo</h4>
+        ${convocadas.map(c => `
+            <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee">
+                <span>${c.atleta}</span>
+                <span>${c.gols} Gols | ${c.excl}x 2min</span>
+            </div>
+        `).join('')}
+    `;
+    document.getElementById('detailPane').classList.add('open');
+}
+
+loadData();
 </script>
 </body>
 </html>
