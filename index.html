@@ -3,126 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estarreja Sub-16 Pro</title>
+    <title>Estarreja EAC - Dashboard</title>
     <style>
-        body { margin:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#0f172a; color:white; }
-        header { text-align:center; padding:20px; background:#020617; border-bottom: 3px solid #22c55e; }
-        header img { height:70px; }
-        nav { display:flex; background:#020617; border-bottom: 1px solid #1e293b; }
-        nav button { flex:1; padding:15px; border:none; background:none; color:white; cursor:pointer; font-size: 18px; }
-        .tab { display:none; padding:20px; }
+        /* Reset e Base */
+        body { margin:0; font-family: -apple-system, system-ui, sans-serif; background:#f8fafc; color:#334155; }
+        
+        /* Cabeçalho Profissional */
+        header { text-align:center; padding:25px 15px; background:white; border-bottom: 4px solid #16a34a; }
+        header img { height: 90px; margin-bottom: 10px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+        header h2 { margin:0; font-size: 1.1rem; color: #16a34a; text-transform: uppercase; letter-spacing: 1px; }
+        header p { margin: 5px 0 0; font-size: 0.85rem; color: #64748b; }
+
+        /* Navegação */
+        nav { display:flex; background:white; border-bottom: 1px solid #e2e8f0; position: sticky; top:0; z-index:100; }
+        nav button { flex:1; padding:18px; border:none; background:none; color:#94a3b8; cursor:pointer; font-size: 1.3rem; transition: 0.3s; }
+        nav button.active-btn { color:#16a34a; border-bottom: 3px solid #16a34a; font-weight: bold; }
+
+        /* Conteúdo */
+        .tab { display:none; padding:15px; max-width: 500px; margin: 0 auto; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .active { display:block; }
-        .stats-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap:10px; margin-bottom:20px; }
-        .card { background:#1e293b; padding:15px; border-radius:12px; text-align:center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); }
-        .big { font-size:24px; font-weight:bold; color:#22c55e; display:block; }
-        .player-card { display: flex; justify-content: space-between; align-items: center; background:#1e293b; margin-bottom: 8px; padding: 15px; border-radius: 8px; border-left: 4px solid #22c55e; }
-        .player-info { display: flex; flex-direction: column; }
-        .player-name { font-weight: bold; font-size: 1.1em; }
-        .player-goals { font-size: 1.2em; font-weight: bold; color: #22c55e; }
+
+        /* Dashboard Cards */
+        .stats-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-bottom:20px; }
+        .card-stat { background:white; padding:15px; border-radius:15px; text-align:center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
+        .val { display:block; font-size: 1.6rem; font-weight: 800; color:#16a34a; }
+        .lab { font-size: 0.65rem; color:#64748b; text-transform: uppercase; font-weight: bold; }
+
+        /* Ranking de Atletas */
+        .player-card { background:white; display:flex; align-items:center; padding:14px; border-radius:12px; margin-bottom:10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; transition: 0.2s; }
+        .pos { width: 35px; font-weight: 800; color:#cbd5e1; font-size: 0.9rem; }
+        .p-name { flex:1; font-weight: 600; color:#1e293b; }
+        .p-goals { background:#f0fdf4; padding:6px 14px; border-radius:20px; font-weight: 800; color:#16a34a; font-size: 1rem; border: 1px solid #dcfce7; }
+
+        #loading-screen { text-align:center; padding:100px 20px; color:#94a3b8; }
+        .footer-msg { text-align:center; font-style:italic; font-size: 0.85rem; color:#94a3b8; padding: 20px; }
     </style>
 </head>
 <body>
 
 <header>
-    <h2>Estarreja Andebol Clube</h2>
-    <div id="club-summary" style="font-size: 0.9em; color: #94a3b8;">Sub-16 Feminino</div>
+    <img src="logo.png" alt="Emblema Estarreja">
+    <h2>Estarreja EAC</h2>
+    <p>Sub-16 Feminino • Época 2025/26</p>
 </header>
 
 <nav>
-    <button onclick="tab('dash')">📊</button>
-    <button onclick="tab('rank')">🏆</button>
+    <button onclick="showTab('dash', this)" class="active-btn">📊</button>
+    <button onclick="showTab('rank', this)">🏆</button>
 </nav>
 
+<div id="loading-screen">Sincronizando dados...</div>
+
 <div id="dash" class="tab active">
-    <div class="stats-grid" id="main-stats">
-        <!-- Preenchido via JS -->
+    <div class="stats-grid" id="summary-stats">
+        <!-- Gerado via JS -->
     </div>
-    <div id="motivational-msg" style="text-align:center; font-style:italic; color:#22c55e;"></div>
+    <div class="footer-msg" id="motivation"></div>
 </div>
 
 <div id="rank" class="tab">
-    <h3>Artilheiras</h3>
+    <h3 style="font-size: 1rem; color: #64748b; margin-bottom: 15px;">Ranking de Artilheiras</h3>
     <div id="ranking-list"></div>
 </div>
 
 <script>
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Ip29SsNYoB99RLWmse4JBY9zmokOhLsr8-yZGk9J_7Z_kIi7lToM3KlFoMz7byKYkuLRPYy_TJ8S/pub?output=csv";
 
-function tab(id) {
+function showTab(id, btn) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-btn'));
     document.getElementById(id).classList.add('active');
+    btn.classList.add('active-btn');
 }
 
-async function fetchData() {
+async function startApp() {
     try {
         const response = await fetch(SHEET_URL);
-        const data = await response.text();
-        const rows = data.split('\n').map(row => row.split(','));
+        const csv = await response.text();
+        const sep = csv.includes(';') ? ';' : ',';
+        const rows = csv.split('\n').map(r => r.split(sep));
 
-        // 1. Extrair Dados do Topo (Células E2, F2, G2, H2 do print)
-        // No CSV, os índices aproximados (ajustados conforme o print)
-        const headerRow = rows[1]; // Linha 2
-        const stats = {
-            jogos: headerRow[4] || 0,
-            vitorias: headerRow[5] || 0,
-            derrotas: headerRow[6] || 0,
-            golosM: headerRow[7] || 0
+        // Dados do topo (APP1.jpg)
+        const headerStats = rows[1]; 
+        const clubSummary = {
+            jogos: headerStats[4] || "0",
+            vitorias: headerStats[5] || "0",
+            golosMarcados: headerStats[7] || "0"
         };
 
-        // 2. Extrair Jogadoras e Golos (Coluna C e Coluna R)
-        // No print: Nomes começam na linha 6 (index 5) até a linha 18 (index 17)
+        // Dados das Jogadoras (Coluna C=2 e Coluna R=17 | Linhas 6-18)
         let players = [];
-        for (let i = 5; i <= 18; i++) {
+        for (let i = 5; i <= 17; i++) {
             let row = rows[i];
-            if (row) {
-                let name = row[2] ? row[2].replace(/"/g, '').trim() : "";
-                let goals = row[17] ? parseInt(row[17].replace(/[^\d]/g, '')) : 0; // Coluna R é index 17
-                
-                if (name && name !== "" && name !== "Adversário") {
+            if (row && row[2]) {
+                let name = row[2].replace(/"/g, '').trim();
+                let goals = parseInt(row[17]) || 0;
+                // Evita pegar linhas vazias ou de cabeçalho
+                if(name && name.length > 2 && name !== "Adversário") {
                     players.push({ name, goals });
                 }
             }
         }
 
-        // Ordenar por golos
         players.sort((a, b) => b.goals - a.goals);
+        updateUI(clubSummary, players);
+        document.getElementById('loading-screen').style.display = 'none';
 
-        render(stats, players);
-    } catch (e) {
-        console.error("Erro:", e);
+    } catch (err) {
+        document.getElementById('loading-screen').innerText = "Falha ao ler planilha. Verifique a internet.";
     }
 }
 
-function render(stats, players) {
-    // Render Dash
-    const totalGolosEquipa = players.reduce((sum, p) => sum + p.goals, 0);
-    document.getElementById('main-stats').innerHTML = `
-        <div class="card"><span class="big">${stats.jogos}</span>Jogos</div>
-        <div class="card"><span class="big">${stats.vitorias}</span>Vitórias</div>
-        <div class="card"><span class="big">${totalGolosEquipa}</span>Golos</div>
+function updateUI(stats, players) {
+    const total = players.reduce((acc, p) => acc + p.goals, 0);
+    
+    // Dashboard
+    document.getElementById('summary-stats').innerHTML = `
+        <div class="card-stat"><span class="val">${stats.jogos}</span><span class="lab">Jogos</span></div>
+        <div class="card-stat"><span class="val">${stats.vitorias}</span><span class="lab">Vitórias</span></div>
+        <div class="card-stat"><span class="val">${total}</span><span class="lab">Golos</span></div>
     `;
 
-    // Render Ranking
-    const list = document.getElementById('ranking-list');
-    list.innerHTML = "";
+    // Ranking
+    const rankList = document.getElementById('ranking-list');
+    rankList.innerHTML = "";
     players.forEach((p, i) => {
         const medal = i === 0 ? "🥇 " : i === 1 ? "🥈 " : i === 2 ? "🥉 " : "";
-        list.innerHTML += `
+        rankList.innerHTML += `
             <div class="player-card">
-                <div class="player-info">
-                    <span class="player-name">${medal}${p.name}</span>
-                </div>
-                <div class="player-goals">${p.goals}</div>
+                <span class="pos">${i+1}º</span>
+                <span class="p-name">${medal}${p.name}</span>
+                <span class="p-goals">${p.goals}</span>
             </div>
         `;
     });
 
-    const msgs = ["💚 Juntas somos imparáveis", "🔥 Foco total", "🏐 Uma equipa, um objetivo"];
-    document.getElementById('motivational-msg').innerText = msgs[Math.floor(Math.random()*msgs.length)];
+    const frases = ["💚 Uma equipa, um objetivo!", "🔥 Juntas somos imparáveis!", "🏐 Orgulho em ser Estarreja!"];
+    document.getElementById('motivation').innerText = frases[Math.floor(Math.random()*frases.length)];
 }
 
-fetchData();
-setInterval(fetchData, 30000); // Atualiza a cada 30 segundos
+// Inicia o App
+startApp();
+// Auto-update a cada 2 minutos para poupar dados
+setInterval(startApp, 120000);
 </script>
 
 </body>
