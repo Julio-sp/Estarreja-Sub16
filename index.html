@@ -1,172 +1,283 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EAC SCOUT - RECOVERY</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root { --v: #2e7d32; --d: #0f172a; --bg: #f8fafc; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Lexend', sans-serif; }
-        body { background: var(--bg); color: var(--d); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EAC SCOUT v21.0</title>
 
-        /* LOADER DE DIAGNÓSTICO */
-        #loading { 
-            position: fixed; inset: 0; background: white; z-index: 9999; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            padding: 20px; text-align: center; font-weight: 900;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&display=swap" rel="stylesheet">
 
-        /* HEADER */
-        header { position: fixed; top: 0; width: 100%; height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+<style>
+:root { --verde:#2e7d32; --dark:#0f172a; --bg:#f1f5f9; --white:#fff; }
 
-        /* BANNER */
-        .hero { background: var(--v); margin: 75px 15px 20px 15px; padding: 35px 20px; border-radius: 20px; text-align: center; }
-        .hero h1 { font-size: 2rem; font-weight: 900; line-height: 1.1; text-transform: uppercase; }
-        .p { color: #000; } .b { color: #fff; }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Lexend',sans-serif;}
+body{background:var(--bg);color:var(--dark);overflow-x:hidden;}
 
-        .container { padding: 0 15px 100px 15px; max-width: 600px; margin: 0 auto; }
-        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); }
-        .g-row { display: flex; align-items: center; justify-content: space-between; text-align: center; }
-        .tm img { width: 45px; height: 45px; object-fit: contain; }
-        .tm b { display: block; font-size: 0.6rem; margin-top: 5px; }
-        .sc { font-size: 1.8rem; font-weight: 900; }
+img{max-width:100%;}
 
-        #side { position: fixed; left: -280px; top: 0; width: 280px; height: 100%; background: var(--d); z-index: 1100; transition: 0.3s; padding-top: 60px; }
-        #side.active { left: 0; }
-        #side a { display: block; padding: 15px 25px; color: #94a3b8; text-decoration: none; font-size: 0.8rem; font-weight: 700; border-bottom: 1px solid #1e293b; }
-        
-        .btn-gps { display: block; width: 100%; padding: 12px; background: #dcfce7; color: #15803d; text-align: center; border-radius: 10px; text-decoration: none; font-weight: 800; margin-top: 10px; font-size: 0.7rem; }
-    </style>
+/* HEADER */
+header{position:fixed;top:0;width:100%;height:70px;background:#fff;
+display:flex;align-items:center;justify-content:space-between;padding:0 20px;
+z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,.1);}
+.menu-btn{font-size:28px;cursor:pointer;color:var(--verde);}
+.logo{height:45px;cursor:pointer}
+
+/* SIDEBAR */
+#sidebar{position:fixed;left:-280px;top:0;width:280px;height:100%;
+background:var(--dark);z-index:1100;transition:.3s;padding-top:80px;}
+#sidebar.active{left:0;}
+#sidebar a{display:block;padding:15px 25px;color:#cbd5e1;text-decoration:none;
+border-bottom:1px solid #1e293b;font-size:.8rem;font-weight:700;text-transform:uppercase;}
+.submenu{background:#0a0f1d;display:none;}
+.submenu a{padding-left:45px;font-size:.75rem;color:#94a3b8}
+
+/* HERO */
+.hero{background:var(--verde);padding:50px 20px;border-radius:20px;
+text-align:center;margin:90px 20px 30px;box-shadow:0 10px 30px rgba(0,0,0,.2);}
+.hero h1{font-size:2.2rem;font-weight:900}
+.txt-black{color:#000}.txt-white{color:#fff}
+
+/* CONTAINER */
+.container{padding:0 20px 100px;max-width:800px;margin:auto}
+.section-title{display:flex;gap:10px;margin-bottom:20px;font-weight:900;text-transform:uppercase}
+.section-title::before{content:'';width:6px;height:25px;background:var(--verde)}
+
+/* CARDS */
+.card{background:#fff;border-radius:20px;padding:20px;margin-bottom:20px;
+box-shadow:0 4px 6px rgba(0,0,0,.05)}
+.game-grid{display:flex;justify-content:space-between;text-align:center;margin:15px 0}
+.team img{width:50px;height:50px;object-fit:contain}
+.team span{font-size:.7rem;font-weight:800;margin-top:5px}
+.score{font-size:2rem;font-weight:900}
+
+.btn-row{display:flex;gap:10px}
+.btn{flex:1;padding:12px;border-radius:12px;border:none;font-size:.7rem;font-weight:800;cursor:pointer;text-align:center}
+.btn-gps{background:#dcfce7;color:#15803d}
+.btn-info{background:#f1f5f9;color:#475569}
+
+/* TABELA */
+.table-res{width:100%;border-collapse:collapse;background:#fff;border-radius:15px;overflow:hidden}
+.table-res th{background:var(--verde);color:#fff;padding:12px}
+.table-res td{padding:12px;border-bottom:1px solid #eee}
+.pos-eac{background:#f0fdf4;font-weight:900}
+
+/* ATLETAS */
+.atleta-row{background:#fff;padding:12px;border-radius:15px;margin-bottom:10px;
+display:flex;align-items:center;cursor:pointer}
+.atleta-img{width:50px;height:50px;border-radius:50%;margin-right:15px}
+
+/* MODAL */
+#modal{position:fixed;top:0;right:-100%;width:100%;height:100%;
+background:#fff;z-index:2000;transition:.4s;overflow:auto}
+#modal.active{right:0}
+
+.stats-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:20px}
+.stat-item{padding:15px;border-radius:15px;text-align:center;color:#fff;cursor:pointer}
+.acc-content{display:none;padding:15px;background:#f8fafc;margin:10px;border-radius:12px}
+
+/* LOADER */
+#loader{position:fixed;inset:0;background:#fff;z-index:3000;
+display:flex;flex-direction:column;align-items:center;justify-content:center}
+</style>
 </head>
+
 <body>
 
-    <div id="loading">
-        <div id="status">CONECTANDO ÀS PLANILHAS...</div>
-        <div id="details" style="font-size: 0.7rem; color: gray; margin-top: 10px; font-weight: 400;"></div>
-    </div>
+<div id="loader">
+<p>CONECTANDO...</p>
+<div id="diag"></div>
+</div>
 
-    <header>
-        <div onclick="tgl()" style="font-size: 24px; color: var(--v);">☰</div>
-        <img src="logo.png" style="height: 40px;" onerror="this.src='https://raw.githubusercontent.com/estarrejaandebolclube/site/main/logo.png'">
-        <div onclick="location.reload()">🔄</div>
-    </header>
+<header>
+<div class="menu-btn" onclick="toggleMenu()">☰</div>
+<img src="logo.png" class="logo" onclick="location.reload()">
+<div onclick="location.reload()">🔄</div>
+</header>
 
-    <nav id="side">
-        <a onclick="vw('home')">🏠 INÍCIO</a>
-        <a onclick="render('SUB16')">👥 SUB-16 FEM</a>
-        <a onclick="render('SUB18')">👥 SUB-18 FEM</a>
-        <a onclick="cal()">📅 CALENDÁRIO</a>
-    </nav>
+<div id="sidebar">
+<a onclick="showView('home')">Início</a>
+<a onclick="toggleSub('sub')">Elenco</a>
+<div id="sub" class="submenu">
+<a onclick="renderElenco('SUB16')">Sub-16</a>
+<a onclick="renderElenco('SUB18')">Sub-18</a>
+</div>
+<a onclick="renderCalendario()">Calendário</a>
+<a onclick="renderClassificacao()">Classificação</a>
+</div>
 
-    <main id="main">
-        <div id="p-home">
-            <div class="hero">
-                <h1><span class="p">ESTARREJA</span><br><span class="b">ANDebol</span><br><span class="p">CLUBE</span></h1>
-            </div>
-            <div class="container" id="home-content"></div>
-        </div>
-        <div id="p-dyn" class="container" style="display:none; margin-top: 80px;">
-            <h2 id="dyn-ttl" style="margin-bottom: 20px;"></h2>
-            <div id="dyn-cnt"></div>
-        </div>
-    </main>
+<main id="main-content">
+
+<div id="page-home">
+<div class="hero">
+<h1>
+<div class="txt-black">ESTARREJA</div>
+<div class="txt-white">ANDEBOL</div>
+</h1>
+</div>
+
+<div class="container">
+<div class="section-title">Jogos</div>
+<div id="home-games"></div>
+</div>
+</div>
+
+<div id="page-dynamic" class="container" style="display:none;margin-top:90px;">
+<div id="dynamic-title" class="section-title"></div>
+<div id="dynamic-body"></div>
+</div>
+
+</main>
+
+<div id="modal">
+<div onclick="closeModal()">⬅ VOLTAR</div>
+<div id="modal-body"></div>
+</div>
 
 <script>
-    // URLs ORIGINAIS DA V13
-    const URLS = {
-        atleta: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
-        jogo: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv"
-    };
 
-    let DB = { atletas: [], jogos: [] };
+/* LINKS */
+const SHEETS={
+at:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&output=csv",
+jg:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&output=csv",
+sc:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&output=csv",
+cl:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=2008001682&output=csv"
+};
 
-    async function start() {
-        const details = document.getElementById('details');
-        try {
-            details.innerText = "Baixando atletas...";
-            const resAt = await fetch(URLS.atleta);
-            if(!resAt.ok) throw new Error("Falha na planilha de Atletas");
-            const txtAt = await resAt.text();
-            DB.atletas = parse(txtAt);
+let DB={atletas:[],jogos:[],scout:[],class:[]};
 
-            details.innerText = "Baixando jogos...";
-            const resJg = await fetch(URLS.jogo);
-            if(!resJg.ok) throw new Error("Falha na planilha de Jogos");
-            const txtJg = await resJg.text();
-            DB.jogos = parse(txtJg);
+/* SAFE */
+function safe(t){
+return String(t||"").replace(/[&<>"']/g,m=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+})[m]);
+}
 
-            details.innerText = "Renderizando...";
-            showHome();
-            document.getElementById('loading').style.display = 'none';
-        } catch (e) {
-            document.getElementById('status').innerHTML = "<span style='color:red'>ERRO CRÍTICO</span>";
-            details.innerHTML = `${e.message}<br><br>Verifique se a planilha está 'Publicada na Web' como CSV.`;
-        }
-    }
+/* CSV */
+function parseCSV(text){
+const rows=text.split('\n').filter(r=>r.trim());
+const headers=rows[0].split(',');
+return rows.slice(1).map(r=>{
+const cols=r.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)||[];
+let obj={};
+headers.forEach((h,i)=>obj[h]=cols[i]?.replace(/"/g,'').trim()||"");
+return obj;
+});
+}
 
-    function parse(csv) {
-        const rows = csv.split('\n').filter(r => r.trim() !== "");
-        const head = rows[0].split(',').map(h => h.trim().replace(/"/g, ''));
-        return rows.slice(1).map(row => {
-            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            let obj = {};
-            head.forEach((h, i) => obj[h] = cols[i] ? cols[i].replace(/"/g, '').trim() : "");
-            return obj;
-        });
-    }
+/* INIT */
+async function init(){
+const diag=document.getElementById('diag');
+try{
+const [at,jg,sc,cl]=await Promise.all([
+fetch(SHEETS.at).then(r=>r.text()),
+fetch(SHEETS.jg).then(r=>r.text()),
+fetch(SHEETS.sc).then(r=>r.text()),
+fetch(SHEETS.cl).then(r=>r.text())
+]);
 
-    function showHome() {
-        const prox = DB.jogos.filter(j => j.Gols_EAC === "").slice(0, 2);
-        document.getElementById('home-content').innerHTML = `
-            <h3 style="margin-bottom:15px">PRÓXIMOS JOGOS</h3>
-            ${prox.map(j => card(j)).join('')}
-        `;
-    }
+DB.atletas=parseCSV(at);
+DB.jogos=parseCSV(jg);
+DB.scout=parseCSV(sc);
+DB.class=parseCSV(cl);
 
-    function card(j) {
-        const fora = j.Onde.toLowerCase() === 'fora';
-        const eacLogo = "https://raw.githubusercontent.com/estarrejaandebolclube/site/main/logo.png";
-        return `
-            <div class="card">
-                <div style="font-size:0.6rem; font-weight:900; color:var(--v); margin-bottom:10px;">${j.Escalao} | ${j.Data}</div>
-                <div class="g-row">
-                    <div class="tm"><img src="${fora ? j.Logo_Adversario : eacLogo}" onerror="this.src='https://via.placeholder.com/50'"><b>${fora ? j.Adversário : 'EAC'}</b></div>
-                    <div class="sc">${j.Gols_EAC || 'VS'}</div>
-                    <div class="tm"><img src="${fora ? eacLogo : j.Logo_Adversario}" onerror="this.src='https://via.placeholder.com/50'"><b>${fora ? 'EAC' : j.Adversário}</b></div>
-                </div>
-                <a href="${j.Link_GPS}" target="_blank" class="btn-gps">ABRIR LOCALIZAÇÃO</a>
-            </div>
-        `;
-    }
+if(!DB.jogos.length) throw "Dados inválidos";
 
-    function render(esc) {
-        vw('dyn');
-        document.getElementById('dyn-ttl').innerText = "ELENCO " + esc;
-        const list = DB.atletas.filter(a => a.Escalão && a.Escalão.includes(esc));
-        document.getElementById('dyn-cnt').innerHTML = list.map(a => `
-            <div class="card" style="display:flex; align-items:center;">
-                <img src="${a.Foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:15px">
-                <b>${a.Nome}</b>
-            </div>
-        `).join('');
-    }
+renderHome();
+document.getElementById('loader').style.display='none';
 
-    function cal() {
-        vw('dyn');
-        document.getElementById('dyn-ttl').innerText = "CALENDÁRIO";
-        document.getElementById('dyn-cnt').innerHTML = DB.jogos.map(j => card(j)).join('');
-    }
+}catch(e){
+diag.innerHTML="<b>ERRO AO CARREGAR</b>";
+}
+}
 
-    function vw(v) {
-        document.getElementById('p-home').style.display = v === 'home' ? 'block' : 'none';
-        document.getElementById('p-dyn').style.display = v === 'dyn' ? 'block' : 'none';
-        tgl();
-    }
+/* HOME */
+function renderHome(){
+const jogos=DB.jogos.slice(0,2);
+document.getElementById('home-games').innerHTML=jogos.map(gameCard).join('');
+}
 
-    function tgl() { document.getElementById('side').classList.toggle('active'); }
+/* CARD */
+function gameCard(j){
+const fora=(j.Onde||"").toLowerCase()==='fora';
+return `
+<div class="card">
+<div>${safe(j.Data)}</div>
+<div class="game-grid">
+<div>${safe(j.Adversário||"EAC")}</div>
+<div class="score">${j.Gols_EAC||"VS"}</div>
+<div>EAC</div>
+</div>
+</div>`;
+}
 
-    window.onload = start;
+/* ELENCO */
+function renderElenco(esc){
+showView('dynamic');
+document.getElementById('dynamic-title').innerText=esc;
+
+const lista=DB.atletas.filter(a=>(a.Escalão||"").includes(esc));
+
+document.getElementById('dynamic-body').innerHTML=lista.map(a=>`
+<div class="atleta-row" onclick="openAtleta('${safe(a.Nome)}')">
+<img src="${a.Foto}" class="atleta-img">
+<div>${safe(a.Nome)}</div>
+</div>`).join('');
+}
+
+/* ATLETA */
+function openAtleta(nome){
+const a=DB.atletas.find(x=>x.Nome===nome);
+if(!a){alert("Erro atleta");return;}
+
+document.getElementById('modal-body').innerHTML=`
+<h2>${safe(a.Nome)}</h2>
+`;
+
+document.getElementById('modal').classList.add('active');
+}
+
+/* CLASS */
+function renderClassificacao(){
+showView('dynamic');
+let html=`<table class="table-res"><tr><th>POS</th><th>EQUIPA</th></tr>`;
+DB.class.forEach(c=>{
+html+=`<tr><td>${c.Pos}</td><td>${safe(c.Equipa)}</td></tr>`;
+});
+html+="</table>";
+document.getElementById('dynamic-body').innerHTML=html;
+}
+
+/* CAL */
+function renderCalendario(){
+showView('dynamic');
+document.getElementById('dynamic-body').innerHTML=DB.jogos.map(gameCard).join('');
+}
+
+/* UI */
+function showView(v){
+document.getElementById('page-home').style.display=v==='home'?'block':'none';
+document.getElementById('page-dynamic').style.display=v==='dynamic'?'block':'none';
+toggleMenu(false);
+}
+
+function toggleMenu(force){
+const el=document.getElementById('sidebar');
+if(force===false) el.classList.remove('active');
+else el.classList.toggle('active');
+}
+
+function toggleSub(id){
+const el=document.getElementById(id);
+el.style.display=el.style.display==='block'?'none':'block';
+}
+
+function closeModal(){
+document.getElementById('modal').classList.remove('active');
+}
+
+/* INIT */
+window.onload=init;
+
 </script>
 </body>
 </html>
