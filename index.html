@@ -3,51 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EAC Scout Portal v7.8 - ULTIMATE</title>
+    <title>EAC Scout Portal v8.0 - PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --verde: #16a34a; --vermelho: #ef4444; --azul: #1e40af; --bg: #f1f5f9; --eac-dark: #0f172a; }
-        body { margin:0; font-family: 'Lexend', sans-serif; background: var(--bg); color: #1e293b; overflow-x: hidden; }
+        body { margin:0; font-family: 'Lexend', sans-serif; background: var(--bg); color: #1e293b; }
         
-        /* Navegação */
+        /* Banner ADN - Grande e Impactante */
+        .adn-container { background: var(--verde); padding: 40px 20px; text-align: center; margin-bottom: 20px; border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .adn-word { display: block; font-size: 3.5rem; font-weight: 900; line-height: 1; letter-spacing: -2px; }
+        .word-white { color: white; }
+        .word-black { color: #000; }
+
+        /* Sidebar e Topbar */
         .top-bar { position: fixed; top: 0; width: 100%; height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 1001; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         #sidebar { position: fixed; left: -260px; top: 0; width: 260px; height: 100%; background: var(--eac-dark); color: white; transition: 0.3s; z-index: 1000; padding-top: 70px; }
         #sidebar.active { left: 0; }
-        #sidebar a { display: block; padding: 15px 25px; color: #94a3b8; text-decoration: none; border-bottom: 1px solid #1e293b; cursor: pointer; font-size: 0.9rem; }
-        .submenu { background: #161e2e; display: none; }
-        .submenu.open { display: block; }
+        #sidebar a { display: block; padding: 15px 25px; color: #94a3b8; text-decoration: none; border-bottom: 1px solid #1e293b; cursor: pointer; font-size: 0.9rem; font-weight: 600; }
 
-        .container { padding: 20px; max-width: 800px; margin: 70px auto 20px auto; display: none; min-height: 80vh; }
+        /* Containers */
+        .container { padding: 20px; max-width: 800px; margin: 70px auto 20px auto; display: none; }
         .container.active { display: block; }
 
-        /* Layout Jogos 7.5 */
-        .month-divider { padding: 10px 0; margin: 20px 0 10px 0; border-bottom: 2px solid #e2e8f0; font-weight: 800; color: var(--eac-dark); font-size: 0.9rem; text-transform: uppercase; }
+        /* Layout Jogos 7.5 (Mantido) */
         .game-card { background: white; border-radius: 15px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: flex; border: 1px solid #e2e8f0; }
-        .game-status-bar { width: 10px; }
         .game-content { flex: 1; padding: 20px; }
         .game-header { display: flex; justify-content: space-between; font-size: 0.75rem; color: #64748b; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; }
         .game-main { display: flex; align-items: center; justify-content: space-between; }
-        .team { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .team img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 8px; }
-        .team span { font-weight: 800; font-size: 0.8rem; }
-        .score-box { text-align: center; min-width: 90px; }
         .score-main { font-size: 2rem; font-weight: 900; }
-        .score-parcial { font-size: 0.65rem; color: #94a3b8; font-weight: 600; margin-top: 5px; }
         .btn-row { display: flex; gap: 10px; margin-top: 15px; }
         .info-btn, .maps-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: 800; font-size: 0.7rem; cursor: pointer; text-decoration: none; text-align: center; }
         .info-btn { background: #f1f5f9; color: #475569; }
         .maps-btn { background: #dcfce7; color: #166534; }
 
-        /* Perfil Detalhado */
-        .stat-card { padding: 25px; border-radius: 20px; text-align: center; color: white; }
-        .stat-val { font-size: 3rem; font-weight: 900; display: block; }
-        .stat-label { font-size: 0.8rem; font-weight: 800; opacity: 0.9; }
+        /* Botões de Filtro */
+        .tab-btn { padding:10px 20px; border-radius:20px; border:none; background:#e2e8f0; font-weight:800; cursor:pointer; margin-right: 5px; }
+        .tab-btn.active { background: var(--azul); color: white; }
 
-        /* Auxiliares */
+        /* Detalhes Atleta */
         #detailPane { position: fixed; top:0; right:-100%; width:100%; height:100%; background:white; z-index:2000; transition: 0.3s; overflow-y: auto; }
         #detailPane.open { right:0; }
-        .tab-btn { padding:10px 20px; border-radius:20px; border:none; background:#e2e8f0; font-weight:800; cursor:pointer; }
-        .tab-btn.active { background: var(--azul); color: white; }
+        .stat-card { padding: 20px; border-radius: 15px; text-align: center; color: white; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -63,34 +59,34 @@
     <a id="menu-artilharia" style="display:none" onclick="showView('artilharia')">⚽ ARTILHARIA</a>
     <a onclick="showView('jogos')">📅 JOGOS</a>
     <a onclick="toggleSub('sub-atletas')">👥 ATLETAS ▼</a>
-    <div id="sub-atletas" class="submenu">
+    <div id="sub-atletas" style="display:none; background:#161e2e">
         <a onclick="showView('atletas', 'SUB16')">🔹 SUB16</a>
         <a onclick="showView('atletas', 'SUB18')">🔹 SUB18</a>
     </div>
     <a onclick="showView('treinos')">📍 ONDE TREINAMOS</a>
     <a onclick="toggleSub('sub-niver')">🎂 ANIVERSÁRIOS ▼</a>
-    <div id="sub-niver" class="submenu"></div>
+    <div id="sub-niver" style="display:none; background:#161e2e"></div>
 </div>
 
 <div id="home" class="container active">
-    <div class="adn-banner">
-        <span class="adn-word">HONRA</span>
-        <span class="adn-word" style="color:white">RAÇA</span>
-        <span class="adn-word">PAIXÃO</span>
+    <div class="adn-container">
+        <span class="adn-word word-black">HONRA</span>
+        <span class="adn-word word-white">RAÇA</span>
+        <span class="adn-word word-black">PAIXÃO</span>
     </div>
     <div id="homeNext">
         <h4 style="font-weight:800; border-left:4px solid var(--verde); padding-left:10px">PRÓXIMOS JOGOS</h4>
-        <div id="homeNextContent"></div>
+        <div id="homeNextContent">Carregando...</div>
     </div>
 </div>
 
 <div id="mainView" class="container">
-    <div id="filterArea" style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap"></div>
+    <div id="filterArea" style="margin-bottom:20px"></div>
     <div id="viewContent"></div>
 </div>
 
 <div id="detailPane">
-    <div style="padding: 20px; font-weight: 800; background: #f8fafc; cursor:pointer; position:sticky; top:0; z-index:10" onclick="closeDetail()">⬅ VOLTAR</div>
+    <div style="padding: 20px; font-weight: 800; background: #f8fafc; cursor:pointer" onclick="closeDetail()">⬅ VOLTAR</div>
     <div id="detailBody"></div>
 </div>
 
@@ -109,22 +105,6 @@ const getVal = (obj, key) => {
     return foundKey ? obj[foundKey] : "";
 };
 
-function parseData(str) {
-    if(!str) return new Date(1900,0,1);
-    const p = str.split('/');
-    return new Date(p[2], p[1]-1, p[0]);
-}
-
-function calcularIdade(dataNasc) {
-    if(!dataNasc) return "-";
-    const partes = dataNasc.split('/');
-    const hoje = new Date(2026, 4, 6); // 6 de Maio de 2026
-    const d = parseInt(partes[0]), m = parseInt(partes[1]), a = parseInt(partes[2]);
-    let idade = hoje.getFullYear() - a;
-    if (hoje.getMonth() + 1 < m || (hoje.getMonth() + 1 === m && hoje.getDate() < d)) idade--;
-    return idade;
-}
-
 async function loadData() {
     const fetchCSV = async (url) => {
         const r = await fetch(url + "&t=" + Date.now());
@@ -139,116 +119,35 @@ async function loadData() {
         });
     };
     [DB.atletas, DB.jogos, DB.scout] = await Promise.all([fetchCSV(LINKS.atletas), fetchCSV(LINKS.jogos), fetchCSV(LINKS.scout)]);
-    renderNiverMenu();
     renderHomeNext();
+    renderNiverMenu();
+}
+
+// Opção B: Puxa a foto EXATAMENTE da coluna F (cabeçalho deve ser 'fotos')
+function getFotoAtleta(atleta) {
+    const caminho = getVal(atleta, 'fotos'); // Lê a Coluna F
+    return caminho ? caminho : 'logo.png';
 }
 
 function renderHomeNext() {
     const hoje = new Date(2026, 4, 6);
     const proximos = DB.jogos
-        .filter(j => parseData(getVal(j, 'data')) >= hoje && !getVal(j, 'gols_eac'))
-        .sort((a,b) => parseData(getVal(a, 'data')) - parseData(getVal(b, 'data')))
+        .filter(j => {
+            const d = getVal(j, 'data').split('/');
+            return new Date(d[2], d[1]-1, d[0]) >= hoje && !getVal(j, 'gols_eac');
+        })
+        .sort((a,b) => {
+            const da = getVal(a, 'data').split('/');
+            const db = getVal(b, 'data').split('/');
+            return new Date(da[2], da[1]-1, da[0]) - new Date(db[2], db[1]-1, db[0]);
+        })
         .slice(0, 2);
 
     document.getElementById('homeNextContent').innerHTML = proximos.map(j => `
         <div style="background:white; padding:15px; border-radius:12px; margin-bottom:10px; border-left:5px solid var(--azul); display:flex; justify-content:space-between; align-items:center">
             <div><b>${getVal(j, 'data')}</b><br><small>${getVal(j, 'escalão')}</small></div>
             <div style="text-align:right; font-weight:800">vs ${getVal(j, 'adversário')}</div>
-        </div>`).join('') || "<p>Sem jogos próximos.</p>";
-}
-
-function showView(view, param = '') {
-    if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
-    document.querySelectorAll('.container').forEach(v => v.classList.remove('active'));
-    document.getElementById('viewContent').innerHTML = "";
-    document.getElementById('filterArea').innerHTML = "";
-
-    if(view === 'home') document.getElementById('home').classList.add('active');
-    else {
-        document.getElementById('mainView').classList.add('active');
-        if(view === 'jogos') renderJogos('TODOS');
-        else if(view === 'artilharia') renderArt('GERAL');
-        else if(view === 'atletas') renderAtletas(param);
-        else if(view === 'treinos') renderTreinos();
-    }
-}
-
-function renderJogos(f) {
-    document.getElementById('filterArea').innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(b => 
-        `<button class="tab-btn ${f===b?'active':''}" onclick="renderJogos('${b}')">${b}</button>`).join('');
-
-    let lista = (f === 'TODOS') ? [...DB.jogos] : DB.jogos.filter(j => clean(getVal(j, 'escalão')) === clean(f));
-    lista.sort((a,b) => parseData(getVal(b, 'data')) - parseData(getVal(a, 'data')));
-
-    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-    let html = "", ultimoMes = "";
-
-    lista.forEach(j => {
-        const d = parseData(getVal(j, 'data'));
-        const mesAno = `${meses[d.getMonth()]} ${d.getFullYear()}`;
-        if(mesAno !== ultimoMes) { html += `<div class="month-divider">${mesAno}</div>`; ultimoMes = mesAno; }
-
-        const gEAC = parseInt(getVal(j, 'gols_eac')), gADV = parseInt(getVal(j, 'gols_adv'));
-        const isF = getVal(j, 'local').toLowerCase().includes("fora");
-        const cor = (gEAC > gADV) ? "var(--verde)" : (gEAC < gADV) ? "var(--vermelho)" : (isNaN(gEAC) ? "#cbd5e1" : "var(--azul)");
-
-        html += `
-        <div class="game-card">
-            <div class="game-status-bar" style="background:${cor}"></div>
-            <div class="game-content">
-                <div class="game-header"><span>${getVal(j, 'data')} • ${getVal(j, 'escalão')}</span></div>
-                <div class="game-main">
-                    <div class="team"><img src="${isF?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'"><span>${isF?getVal(j,'adversário'):'EAC'}</span></div>
-                    <div class="score-box">
-                        <div class="score-main">${isNaN(gEAC)?'VS':gEAC+'-'+gADV}</div>
-                        ${!isNaN(gEAC)?`<div class="score-parcial">${getVal(j,'res_1p')} | ${getVal(j,'res_2p')}</div>`:''}
-                    </div>
-                    <div class="team"><img src="${!isF?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'"><span>${!isF?getVal(j,'adversário'):'EAC'}</span></div>
-                </div>
-                <div class="btn-row">
-                    ${!isNaN(gEAC)?`<button class="info-btn" onclick="openJogo('${getVal(j,'id')}')">+ INFO</button>`:''}
-                    ${getVal(j,'Link_maps')?`<a href="${getVal(j,'Link_maps')}" target="_blank" class="maps-btn">VER LOCAL</a>`:''}
-                </div>
-            </div>
-        </div>`;
-    });
-    document.getElementById('viewContent').innerHTML = html;
-}
-
-function renderAtletas(esc) {
-    const list = DB.atletas.filter(a => clean(getVal(a, 'escalão')) === clean(esc));
-    document.getElementById('viewContent').innerHTML = list.map(a => `
-        <div style="background:white; padding:15px; margin-bottom:10px; border-radius:15px; display:flex; align-items:center; cursor:pointer" onclick="openAtleta('${getVal(a, 'nome')}')">
-            <img src="fotos/${getVal(a, 'nome')}.jpg" style="width:55px; height:55px; border-radius:50%; object-fit:cover; margin-right:15px" onerror="this.src='logo.png'">
-            <div>
-                <strong style="font-size:1rem">${getVal(a, 'nome')}</strong><br>
-                <small style="color:#64748b; font-weight:800">${getVal(a, 'posição')} | № ${getVal(a, 'número')}</small>
-            </div>
-        </div>`).join('');
-}
-
-function openAtleta(nome) {
-    const a = DB.atletas.find(x => clean(getVal(x, 'nome')) === clean(nome));
-    const sc = DB.scout.filter(x => clean(getVal(x, 'nome')) === clean(nome));
-    const tg = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
-    const te = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'exclusoes')) || 0), 0);
-
-    document.getElementById('detailBody').innerHTML = `
-        <div style="padding:30px; text-align:center">
-            <img src="fotos/${getVal(a, 'nome')}.jpg" style="width:130px; height:130px; border-radius:50%; object-fit:cover; border:4px solid white; box-shadow:0 5px 15px rgba(0,0,0,0.1)" onerror="this.src='logo.png'">
-            <h2 style="margin:20px 0 5px 0">${getVal(a, 'nome')}</h2>
-            <div style="color:#64748b; font-weight:800; font-size:0.9rem; margin-bottom:10px">
-                🤾 ${getVal(a, 'posição')} | 🎽 № ${getVal(a, 'número')}
-            </div>
-            <div style="font-size:0.85rem; margin-bottom:25px">
-                🎂 ${getVal(a, 'nascimento')} (${calcularIdade(getVal(a, 'nascimento'))} anos)
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px">
-                <div class="stat-card" style="background:var(--verde)"><span class="stat-val">${tg}</span><span class="stat-label">GOLOS</span></div>
-                <div class="stat-card" style="background:var(--vermelho)"><span class="stat-val">${te}</span><span class="stat-label">2 MIN</span></div>
-            </div>
-        </div>`;
-    document.getElementById('detailPane').classList.add('open');
+        </div>`).join('') || "Sem jogos agendados.";
 }
 
 function renderArt(f) {
@@ -257,78 +156,125 @@ function renderArt(f) {
 
     let nomesUnicos = [...new Set(DB.atletas.map(a => getVal(a, 'nome')))];
     let rank = nomesUnicos.map(nome => {
-        let sc = DB.scout.filter(s => {
-            const matchNome = clean(getVal(s, 'nome')) === clean(nome);
-            const matchEsc = (f === 'GERAL') ? true : clean(getVal(s, 'escalão')) === clean(f);
-            return matchNome && matchEsc;
+        let totalGolos = 0;
+        DB.scout.forEach(s => {
+            if (clean(getVal(s, 'nome')) === clean(nome)) {
+                // Linkagem Robusta: Busca o escalão na aba JOGOS usando o ID do jogo do scout
+                const jogo = DB.jogos.find(j => getVal(j, 'id') === getVal(s, 'jogo_id'));
+                const escJogo = jogo ? clean(getVal(jogo, 'escalão')) : "";
+                
+                if (f === 'GERAL' || escJogo === clean(f)) {
+                    totalGolos += (parseInt(getVal(s, 'golos')) || 0);
+                }
+            }
         });
-        return { nome, g: sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0) };
+        return { nome, g: totalGolos };
     }).filter(x => x.g > 0).sort((a,b) => b.g - a.g);
 
     document.getElementById('viewContent').innerHTML = rank.map((p, i) => `
         <div style="background:white; padding:15px; margin-bottom:8px; border-radius:12px; display:flex; justify-content:space-between; align-items:center">
-            <span><b style="color:var(--azul); margin-right:10px">${i+1}º</b> ${p.nome}</span>
+            <span><b style="color:var(--azul)">${i+1}º</b> ${p.nome}</span>
             <b style="font-size:1.1rem">${p.g}</b>
-        </div>`).join('') || "<p>Sem golos neste escalão.</p>";
+        </div>`).join('') || "Sem dados para este escalão.";
 }
 
-function renderTreinos() {
-    document.getElementById('viewContent').innerHTML = `
-        <h2 style="font-weight:800">Horários de Treino</h2>
-        <div style="background:white; padding:20px; border-radius:15px; margin-bottom:15px; border-left:5px solid var(--azul)">
-            <b style="font-size:1.1rem">Quarta-feira</b><br><small>19:00 às 20:30</small><br>
-            <span>Pavilhão Municipal de Estarreja</span><br>
-            <a href="https://www.google.com/maps/search/?api=1&query=Pavilhão+Municipal+de+Estarreja" target="_blank" class="maps-btn" style="display:inline-block; margin-top:10px; width:auto">VER LOCAL</a>
-        </div>
-        <div style="background:white; padding:20px; border-radius:15px; border-left:5px solid var(--azul)">
-            <b style="font-size:1.1rem">Terça e Sexta</b><br><small>19:00 às 20:30</small><br>
-            <span>Escola Secundária de Estarreja</span><br>
-            <a href="https://www.google.com/maps/search/?api=1&query=Escola+Secundária+de+Estarreja" target="_blank" class="maps-btn" style="display:inline-block; margin-top:10px; width:auto">VER LOCAL</a>
-        </div>`;
-}
+function openAtleta(nome) {
+    const a = DB.atletas.find(x => clean(getVal(x, 'nome')) === clean(nome));
+    const sc = DB.scout.filter(x => clean(getVal(x, 'nome')) === clean(nome));
+    const tg = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
+    
+    // Cálculo de idade robusto
+    const n = getVal(a, 'nascimento').split('/');
+    const hoje = new Date(2026, 4, 6);
+    let idade = hoje.getFullYear() - n[2];
+    if (hoje.getMonth() + 1 < n[1] || (hoje.getMonth() + 1 == n[1] && hoje.getDate() < n[0])) idade--;
 
-function openJogo(id) {
-    const j = DB.jogos.find(x => getVal(x, 'id') == id);
-    const sc = DB.scout.filter(s => getVal(s, 'jogo_id') == id);
     document.getElementById('detailBody').innerHTML = `
-        <div style="padding:20px">
-            <h2 style="margin:0">${getVal(j, 'escalão')}</h2>
-            <p style="color:#64748b; font-weight:800">vs ${getVal(j, 'adversário')}</p>
-            <div style="background:#f1f5f9; border-radius:10px; padding:10px; margin-top:15px">
-                ${sc.map(s => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #ddd">
-                    <span>${getVal(s, 'nome')}</span>
-                    <span><b>${getVal(s, 'golos')} G</b> | <b style="color:red">${getVal(s, 'exclusoes')} E</b></span>
-                </div>`).join('')}
+        <div style="padding:30px; text-align:center">
+            <img src="${getFotoAtleta(a)}" style="width:140px; height:140px; border-radius:50%; object-fit:cover; border:4px solid var(--verde)" onerror="this.src='logo.png'">
+            <h2 style="margin:15px 0 5px 0">${getVal(a, 'nome')}</h2>
+            <div style="font-weight:800; color:#64748b; margin-bottom:20px">
+                🤾 ${getVal(a, 'posição')} | 🎽 № ${getVal(a, 'número')}<br>
+                🎂 ${getVal(a, 'nascimento')} (${idade} anos)
+            </div>
+            <div class="stat-card" style="background:var(--azul)">
+                <span style="font-size:2.5rem; font-weight:900">${tg}</span><br>GOLOS TOTAIS
             </div>
         </div>`;
     document.getElementById('detailPane').classList.add('open');
 }
 
+function renderTreinos() {
+    document.getElementById('viewContent').innerHTML = `
+        <h3 style="font-weight:800; border-left:4px solid var(--azul); padding-left:10px">NOSSOS TREINOS</h3>
+        <div style="background:white; padding:20px; border-radius:15px; margin-bottom:15px">
+            <b style="color:var(--azul)">Terça e Sexta (19:00 - 20:30)</b><br>
+            📍 Escola Secundária de Estarreja<br>
+            <a href="https://maps.app.goo.gl/3AAnMhEubU5x2XzB6" target="_blank" class="maps-btn" style="display:block; margin-top:10px">ABRIR MAPA</a>
+        </div>
+        <div style="background:white; padding:20px; border-radius:15px">
+            <b style="color:var(--azul)">Quarta-feira (19:00 - 20:30)</b><br>
+            📍 Pavilhão Municipal de Estarreja<br>
+            <a href="https://maps.app.goo.gl/9u7X2u5R9vP2" target="_blank" class="maps-btn" style="display:block; margin-top:10px">ABRIR MAPA</a>
+        </div>`;
+}
+
+// Funções auxiliares (Sidebar, Views, Login) mantidas do padrão estável
+function showView(view, param = '') {
+    toggleMenu(false);
+    document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+    document.getElementById('viewContent').innerHTML = "";
+    document.getElementById('filterArea').innerHTML = "";
+    if(view === 'home') document.getElementById('home').classList.add('active');
+    else {
+        document.getElementById('mainView').classList.add('active');
+        if(view === 'artilharia') renderArt('GERAL');
+        else if(view === 'treinos') renderTreinos();
+        else if(view === 'atletas') renderAtletas(param);
+        else if(view === 'jogos') renderJogos('TODOS');
+    }
+}
+
+function renderAtletas(esc) {
+    const list = DB.atletas.filter(a => clean(getVal(a, 'escalão')) === clean(esc));
+    document.getElementById('viewContent').innerHTML = list.map(a => `
+        <div onclick="openAtleta('${getVal(a,'nome')}')" style="background:white; padding:15px; margin-bottom:10px; border-radius:15px; display:flex; align-items:center; cursor:pointer">
+            <img src="${getFotoAtleta(a)}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; margin-right:15px" onerror="this.src='logo.png'">
+            <div><b style="font-size:1rem">${getVal(a,'nome')}</b><br><small>№ ${getVal(a,'número')} - ${getVal(a,'posição')}</small></div>
+        </div>`).join('');
+}
+
+function toggleMenu(force) { 
+    const s = document.getElementById('sidebar');
+    if(force === false) s.classList.remove('active');
+    else s.classList.toggle('active'); 
+}
+function toggleSub(id) { 
+    const el = document.getElementById(id);
+    el.style.display = el.style.display === 'none' ? 'block' : 'none'; 
+}
+function closeDetail() { document.getElementById('detailPane').classList.remove('open'); }
+function handleLogin() { if(prompt("Acesso:") === "eac2026") { document.getElementById('menu-artilharia').style.display='block'; document.getElementById('lock-btn').innerText="🔓"; } }
+
+function renderNiverMenu() {
+    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    document.getElementById('sub-niver').innerHTML = meses.map((m, i) => `<a onclick="showNiver(${i+1})">${m}</a>`).join('');
+}
+
 function showNiver(mes) {
-    if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
-    document.querySelectorAll('.container').forEach(v => v.classList.remove('active'));
-    document.getElementById('mainView').classList.add('active');
-    
-    // Filtro de nomes únicos para evitar atletas em 2 escalões
-    let nomesVistos = new Set();
+    showView('mainView');
+    let vistos = new Set();
     const list = DB.atletas.filter(a => {
         const m = parseInt(getVal(a, 'nascimento').split('/')[1]);
         const n = getVal(a, 'nome');
-        if(m === mes && !nomesVistos.has(n)) { nomesVistos.add(n); return true; }
+        if(m === mes && !vistos.has(n)) { vistos.add(n); return true; }
         return false;
-    }).sort((a,b) => parseInt(getVal(a, 'nascimento').split('/')[0]) - parseInt(getVal(b, 'nascimento').split('/')[0]));
-
-    document.getElementById('viewContent').innerHTML = `<h3 style="margin-bottom:20px">Aniversários</h3>` + 
-        list.map(n => `<div style="background:white; padding:15px; margin-bottom:10px; border-radius:15px; display:flex; justify-content:space-between; border-left:5px solid var(--verde)">
-            <strong>${getVal(n, 'nome')}</strong><b>Dia ${getVal(n, 'nascimento').split('/')[0]}</b>
-        </div>`).join('') || "<p>Sem aniversários.</p>";
+    });
+    document.getElementById('viewContent').innerHTML = `<h3>Aniversários</h3>` + list.map(a => `
+        <div style="background:white; padding:15px; margin-bottom:10px; border-radius:10px; border-left:5px solid var(--verde); display:flex; justify-content:space-between">
+            <b>${getVal(a, 'nome')}</b> <span>Dia ${getVal(a, 'nascimento').split('/')[0]}</span>
+        </div>`).join('') || "Nenhum aniversário este mês.";
 }
-
-function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-function toggleSub(id) { document.getElementById(id).classList.toggle('open'); }
-function closeDetail() { document.getElementById('detailPane').classList.remove('open'); }
-function handleLogin() { if(prompt("Senha:") === "eac2026") { document.getElementById('menu-artilharia').style.display='block'; document.getElementById('lock-btn').innerText="🔓"; } }
-function renderNiverMenu() { const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"]; document.getElementById('sub-niver').innerHTML = meses.map((m, i) => `<a onclick="showNiver(${i+1})">${m}</a>`).join(''); }
 
 window.onload = loadData;
 </script>
