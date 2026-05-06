@@ -3,271 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EAC SCOUT - DIRECTOR VERSION v17.0</title>
+    <title>EAC SCOUT - PORTAL OFICIAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --verde: #2e7d32; --dark: #0f172a; --bg: #f1f5f9; --white: #ffffff; }
-        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Lexend', sans-serif; }
-        body { background: var(--bg); color: var(--dark); overflow-x: hidden; }
+        :root { --verde: #2e7d32; --dark: #0f172a; --bg: #f8fafc; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Lexend', sans-serif; }
+        body { background: var(--bg); color: var(--dark); }
 
-        /* HEADER */
-        header { position: fixed; top: 0; width: 100%; height: 70px; background: var(--white); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .menu-btn { font-size: 28px; cursor: pointer; color: var(--verde); }
-        .logo { height: 45px; cursor: pointer; }
+        /* HEADER FIXO */
+        header { 
+            position: fixed; top: 0; width: 100%; height: 70px; 
+            background: white; display: flex; align-items: center; 
+            justify-content: space-between; padding: 0 20px; z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* BANNER SOLICITADO: VERDE COM TEXTO PRETO/BRANCO/PRETO */
+        .hero-banner {
+            background: var(--verde);
+            margin: 90px 15px 25px 15px;
+            padding: 40px 20px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(46,125,50,0.2);
+        }
+        .hero-banner h1 { font-size: 2.2rem; font-weight: 900; line-height: 1.1; text-transform: uppercase; }
+        .c-preto { color: #000; }
+        .c-branco { color: #fff; }
 
         /* SIDEBAR */
-        #sidebar { position: fixed; left: -280px; top: 0; width: 280px; height: 100%; background: var(--dark); z-index: 1100; transition: 0.3s; padding-top: 80px; }
+        #sidebar { 
+            position: fixed; left: -280px; top: 0; width: 280px; height: 100%; 
+            background: var(--dark); z-index: 1100; transition: 0.3s; padding-top: 80px; 
+        }
         #sidebar.active { left: 0; }
-        #sidebar a { display: block; padding: 15px 25px; color: #cbd5e1; text-decoration: none; border-bottom: 1px solid #1e293b; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; cursor: pointer; }
-        #sidebar a:hover { background: #1e293b; color: var(--white); }
-        .submenu { background: #0a0f1d; display: none; }
-        .submenu a { padding-left: 45px; font-size: 0.75rem; color: #94a3b8; }
-
-        /* BANNER PERSONALIZADO */
-        .hero { background: var(--verde); padding: 50px 20px; border-radius: 20px; text-align: center; margin: 90px 20px 30px 20px; box-shadow: 0 10px 30px rgba(46,125,50,0.3); }
-        .hero h1 { font-size: 2.5rem; font-weight: 900; line-height: 1.1; }
-        .txt-black { color: #000; }
-        .txt-white { color: #fff; }
+        #sidebar a { 
+            display: block; padding: 15px 25px; color: #94a3b8; 
+            text-decoration: none; border-bottom: 1px solid #1e293b;
+            font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+        }
 
         /* CONTEÚDO */
-        .container { padding: 0 20px 100px 20px; max-width: 800px; margin: 0 auto; }
-        .section-title { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-weight: 900; text-transform: uppercase; }
-        .section-title::before { content:''; width:6px; height:25px; background:var(--verde); border-radius:3px; }
-
-        /* CARDS */
-        .card { background: var(--white); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .game-grid { display: flex; align-items: center; justify-content: space-between; text-align: center; margin: 15px 0; }
+        .container { padding: 0 15px 100px 15px; max-width: 600px; margin: 0 auto; }
+        .card { 
+            background: white; border-radius: 18px; padding: 20px; 
+            margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .game-info { text-align: center; margin: 15px 0; display: flex; align-items: center; justify-content: space-between; }
         .team img { width: 50px; height: 50px; object-fit: contain; }
-        .team span { display: block; font-size: 0.7rem; font-weight: 800; margin-top: 5px; text-transform: uppercase; }
-        .score { font-size: 2rem; font-weight: 900; letter-spacing: 3px; }
-        .btn-row { display: flex; gap: 10px; }
-        .btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 800; font-size: 0.7rem; cursor: pointer; text-decoration: none; text-align: center; }
+        .team b { display: block; font-size: 0.7rem; margin-top: 5px; text-transform: uppercase; }
+        .score { font-size: 2rem; font-weight: 900; color: var(--dark); }
+
+        /* BOTÕES */
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn { 
+            flex: 1; padding: 12px; border-radius: 12px; border: none; 
+            font-weight: 800; font-size: 0.7rem; cursor: pointer;
+            text-align: center; text-decoration: none;
+        }
         .btn-gps { background: #dcfce7; color: #15803d; }
         .btn-info { background: #f1f5f9; color: #475569; }
 
         /* ATLETAS */
-        .atleta-row { background: var(--white); padding: 12px; border-radius: 15px; margin-bottom: 10px; display: flex; align-items: center; cursor: pointer; }
-        .atleta-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 15px; border: 2px solid var(--bg); }
-        
-        /* MODAL E ACCORDION */
-        #modal { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: var(--white); z-index: 2000; transition: 0.4s; overflow-y: auto; }
-        #modal.active { right: 0; }
-        .stats-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 20px; }
-        .stat-item { padding: 15px; border-radius: 15px; text-align: center; color: #fff; cursor: pointer; }
-        .acc-content { display: none; padding: 15px; background: #f8fafc; margin: 0 20px; border-radius: 12px; font-size: 0.85rem; }
+        .atleta-item {
+            background: white; padding: 12px; border-radius: 15px;
+            display: flex; align-items: center; margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer;
+        }
+        .atleta-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 15px; }
 
         /* LOADER */
-        #loader { position: fixed; inset: 0; background: #fff; z-index: 3000; display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--verde); }
+        #loading { 
+            position: fixed; inset: 0; background: white; z-index: 2000; 
+            display: flex; align-items: center; justify-content: center; font-weight: 900; 
+        }
+        
+        #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 1050; }
     </style>
 </head>
 <body>
 
-    <div id="loader">CARREGANDO DADOS EAC...</div>
+    <div id="loading">CARREGANDO EAC...</div>
+    <div id="overlay" onclick="toggleMenu()"></div>
 
     <header>
-        <div class="menu-btn" onclick="toggleMenu()">☰</div>
-        <img src="logo.png" class="logo" onclick="location.reload()">
-        <div onclick="directorAuth()" style="cursor:pointer">🔒</div>
+        <div onclick="toggleMenu()" style="font-size: 25px; cursor: pointer; color: var(--verde);">☰</div>
+        <img src="logo.png" style="height: 45px;" onerror="this.src='https://raw.githubusercontent.com/estarrejaandebolclube/site/main/logo.png'">
+        <div onclick="location.reload()">🔄</div>
     </header>
 
-    <div id="sidebar">
-        <a onclick="showPage('home')">🏠 Início</a>
-        <a onclick="toggleSub('sub-at')">👥 Elenco ▼</a>
-        <div id="sub-at" class="submenu">
-            <a onclick="renderElenco('SUB16')">Sub-16 Feminino</a>
-            <a onclick="renderElenco('SUB18')">Sub-18 Feminino</a>
-        </div>
-        <a onclick="renderJogos()">📅 Calendário</a>
-        <a onclick="renderTreinos()">📍 Treinos</a>
-    </div>
+    <nav id="sidebar">
+        <a onclick="showView('home')">🏠 Início</a>
+        <a onclick="renderAtletas('SUB16')">👥 Sub-16 Fem</a>
+        <a onclick="renderAtletas('SUB18')">👥 Sub-18 Fem</a>
+        <a onclick="renderCalendario()">📅 Calendário</a>
+    </nav>
 
-    <main id="main-content">
-        <div id="page-home">
-            <div class="hero">
+    <main id="content">
+        <!-- VIEW HOME -->
+        <div id="view-home">
+            <div class="hero-banner">
                 <h1>
-                    <div class="txt-black">ESTARREJA</div>
-                    <div class="txt-white">ANDebol</div>
-                    <div class="txt-black">CLUBE</div>
+                    <span class="c-preto">ESTARREJA</span><br>
+                    <span class="c-branco">ANDebol</span><br>
+                    <span class="c-preto">CLUBE</span>
                 </h1>
             </div>
             <div class="container">
-                <div class="section-title">Próximos 2 Jogos</div>
+                <h2 style="margin-bottom: 15px; font-weight: 900; font-size: 1.1rem;">PRÓXIMOS JOGOS</h2>
                 <div id="home-games"></div>
             </div>
         </div>
 
-        <div id="page-dynamic" class="container" style="display:none; margin-top: 90px;">
-            <div id="dynamic-title" class="section-title"></div>
-            <div id="dynamic-body"></div>
+        <!-- VIEW DINAMICA -->
+        <div id="view-dynamic" class="container" style="display:none; margin-top: 90px;">
+            <h2 id="dyn-title" style="margin-bottom: 20px; font-weight: 900;"></h2>
+            <div id="dyn-content"></div>
         </div>
     </main>
 
-    <div id="modal">
-        <div style="padding: 20px; font-weight: 900; border-bottom: 1px solid #eee;" onclick="closeModal()">⬅ VOLTAR</div>
-        <div id="modal-body"></div>
-    </div>
-
-    <audio id="snd-golo" src="https://www.myinstants.com/media/sounds/gol-gol-gol.mp3"></audio>
-    <audio id="snd-excl" src="https://www.myinstants.com/media/sounds/boo-3.mp3"></audio>
-
 <script>
-const URLS = {
-    at: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
-    jg: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
-    sc: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv"
-};
+    const SHEETS = {
+        at: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=0&single=true&output=csv",
+        jg: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1340468570&single=true&output=csv",
+        sc: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqkp-Fv6iE5jweFA851ua8LXnMl53YQHgqU0-qnXq6rC5dfnGhIJMmZaVDN5Izc3Z5_JA15a1Iz2Lw/pub?gid=1307801054&single=true&output=csv"
+    };
 
-let DB = { atletas: [], jogos: [], scout: [] };
+    let DB = { atletas: [], jogos: [], scout: [] };
 
-async function init() {
-    try {
-        const [atRes, jgRes, scRes] = await Promise.all([
-            fetch(URLS.at), fetch(URLS.jg), fetch(URLS.sc)
-        ]);
-        
-        DB.atletas = parseCSV(await atRes.text());
-        DB.jogos = parseCSV(await jgRes.text());
-        DB.scout = parseCSV(await scRes.text());
+    async function init() {
+        try {
+            const [atT, jgT, scT] = await Promise.all([
+                fetch(SHEETS.at).then(r => r.text()),
+                fetch(SHEETS.jg).then(r => r.text()),
+                fetch(SHEETS.sc).then(r => r.text())
+            ]);
 
-        renderHome();
-        document.getElementById('loader').style.display = 'none';
-    } catch (e) {
-        document.getElementById('loader').innerText = "Erro de conexão. Verifique a internet.";
+            DB.atletas = parse(atT);
+            DB.jogos = parse(jgT);
+            DB.scout = parse(scT);
+
+            renderHome();
+            document.getElementById('loading').style.display = 'none';
+        } catch (e) {
+            document.getElementById('loading').innerHTML = "Erro ao carregar dados. <br> Verifique a planilha.";
+        }
     }
-}
 
-function parseCSV(text) {
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l !== "");
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-    return lines.slice(1).map(line => {
-        const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-        let obj = {};
-        headers.forEach((h, i) => obj[h] = values[i] ? values[i].replace(/"/g, '').trim() : "");
-        return obj;
-    });
-}
-
-function renderHome() {
-    const prox = DB.jogos.filter(j => j.Gols_EAC === "").slice(0, 2);
-    document.getElementById('home-games').innerHTML = prox.map(j => gameCard(j)).join('');
-}
-
-function gameCard(j) {
-    const eFora = j.Onde.toLowerCase() === 'fora';
-    return `
-    <div class="card">
-        <div style="font-size:0.6rem; font-weight:900; color:var(--verde); margin-bottom:10px;">${j.Escalao} | ${j.Data}</div>
-        <div class="game-grid">
-            <div class="team">
-                <img src="${eFora ? j.Logo_Adversario : 'logo.png'}" onerror="this.src='https://via.placeholder.com/50'">
-                <span>${eFora ? j.Adversário : 'EAC'}</span>
-            </div>
-            <div class="score">${j.Gols_EAC === "" ? "VS" : (eFora ? j.Gols_Adv+':'+j.Gols_EAC : j.Gols_EAC+':'+j.Gols_Adv)}</div>
-            <div class="team">
-                <img src="${eFora ? 'logo.png' : j.Logo_Adversario}" onerror="this.src='https://via.placeholder.com/50'">
-                <span>${eFora ? 'EAC' : j.Adversário}</span>
-            </div>
-        </div>
-        <div class="btn-row">
-            <a href="${j.Link_GPS}" target="_blank" class="btn btn-gps">LOCALIZAÇÃO</a>
-            <button class="btn btn-info" onclick="alert('Local: ${j.Local}')">DETALHES</button>
-        </div>
-    </div>`;
-}
-
-function renderElenco(esc) {
-    showPage('dynamic');
-    document.getElementById('dynamic-title').innerText = "ELENCO " + esc;
-    const lista = DB.atletas.filter(a => a.Escalão && a.Escalão.includes(esc));
-    document.getElementById('dynamic-body').innerHTML = lista.map(a => `
-        <div class="atleta-row" onclick="openAtleta('${a.Nome}', '${esc}')">
-            <img src="${a.Foto}" class="atleta-img" onerror="this.src='https://via.placeholder.com/50'">
-            <div style="flex:1">
-                <b style="font-size:0.9rem">${a.Nome}</b><br>
-                <small style="color:var(--verde); font-weight:800">#${a.Número} - ${a.Posição}</small>
-            </div>
-            <span>➔</span>
-        </div>
-    `).join('');
-}
-
-function openAtleta(nome, esc) {
-    const a = DB.atletas.find(at => at.Nome === nome);
-    const scs = DB.scout.filter(s => s.Nome === nome);
-    const g = scs.reduce((sum, s) => sum + (parseInt(s.Golos) || 0), 0);
-    const e = scs.reduce((sum, s) => sum + (parseInt(s.Exclusoes) || 0), 0);
-
-    document.getElementById('modal-body').innerHTML = `
-        <div style="text-align:center; padding:30px;">
-            <img src="${a.Foto}" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:4px solid var(--verde)">
-            <h2 style="margin-top:10px">${a.Nome}</h2>
-        </div>
-        <div class="stats-bar">
-            <div class="stat-item" style="background:#2563eb" onclick="toggleAcc('acc-g', 'golo')"><b>${g}</b><br><small>GOLOS</small></div>
-            <div class="stat-item" style="background:var(--verde)"><b>${scs.length > 0 ? (g/scs.length).toFixed(1) : 0}</b><br><small>MÉDIA</small></div>
-            <div class="stat-item" style="background:#dc2626" onclick="toggleAcc('acc-e', 'excl')"><b>${e}</b><br><small>2 MIN</small></div>
-        </div>
-        <div id="acc-g" class="acc-content">
-            <b>Marcou contra:</b><br>
-            ${scs.filter(s => s.Golos > 0).map(s => {
-                const j = DB.jogos.find(jg => jg.ID == s.Jogo_ID);
-                return `• ${j ? j.Adversário : 'Outro'}: ${s.Golos} golos<br>`;
-            }).join('') || 'Sem golos'}
-        </div>
-        <div id="acc-e" class="acc-content">
-            <b>Exclusões contra:</b><br>
-            ${scs.filter(s => s.Exclusoes > 0).map(s => {
-                const j = DB.jogos.find(jg => jg.ID == s.Jogo_ID);
-                return `• ${j ? j.Adversário : 'Outro'}: ${s.Exclusoes}x<br>`;
-            }).join('') || 'Limpa'}
-        </div>
-    `;
-    document.getElementById('modal').classList.add('active');
-}
-
-function renderJogos() {
-    showPage('dynamic');
-    document.getElementById('dynamic-title').innerText = "CALENDÁRIO";
-    document.getElementById('dynamic-body').innerHTML = DB.jogos.map(j => gameCard(j)).join('');
-}
-
-function renderTreinos() {
-    showPage('dynamic');
-    document.getElementById('dynamic-title').innerText = "LOCAIS DE TREINO";
-    document.getElementById('dynamic-body').innerHTML = `
-        <div class="card">
-            <h3>Pavilhão Municipal</h3>
-            <p style="font-size:0.8rem; margin:10px 0;">Sede principal dos treinos EAC.</p>
-            <a href="https://maps.app.goo.gl/Yp4AasH4pG2D6MhDA" target="_blank" class="btn btn-gps" style="display:block">VER NO MAPA</a>
-        </div>
-    `;
-}
-
-function toggleAcc(id, snd) {
-    const target = document.getElementById(id);
-    const isOpen = target.style.display === 'block';
-    document.querySelectorAll('.acc-content').forEach(c => c.style.display = 'none');
-    if(!isOpen) {
-        target.style.display = 'block';
-        document.getElementById('snd-'+snd).play();
+    function parse(csv) {
+        const lines = csv.split('\n').filter(l => l.trim() !== "");
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        return lines.slice(1).map(line => {
+            const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            let obj = {};
+            headers.forEach((h, i) => obj[h] = values[i] ? values[i].replace(/"/g, '').trim() : "");
+            return obj;
+        });
     }
-}
 
-function showPage(p) {
-    document.getElementById('page-home').style.display = (p === 'home' ? 'block' : 'none');
-    document.getElementById('page-dynamic').style.display = (p === 'dynamic' ? 'block' : 'none');
-    toggleMenu();
-}
+    function renderHome() {
+        const proximos = DB.jogos.filter(j => j.Gols_EAC === "").slice(0, 2);
+        document.getElementById('home-games').innerHTML = proximos.map(j => cardJogo(j)).join('');
+    }
 
-function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-function toggleSub(id) { 
-    const s = document.getElementById(id);
-    s.style.display = (s.style.display === 'block' ? 'none' : 'block');
-}
-function closeModal() { document.getElementById('modal').classList.remove('active'); }
-function directorAuth() { if(prompt("Acesso Diretor:") === "eac2026") alert("Modo Admin Ativo"); }
+    function cardJogo(j) {
+        const isFora = j.Onde.toLowerCase() === 'fora';
+        const logoEAC = "https://raw.githubusercontent.com/estarrejaandebolclube/site/main/logo.png";
+        return `
+            <div class="card">
+                <div style="font-size: 0.6rem; font-weight: 800; color: var(--verde); margin-bottom: 10px;">${j.Escalao} | ${j.Data}</div>
+                <div class="game-info">
+                    <div class="team"><img src="${isFora ? j.Logo_Adversario : logoEAC}" onerror="this.src='https://via.placeholder.com/50'"><b>${isFora ? j.Adversário : 'EAC'}</b></div>
+                    <div class="score">${j.Gols_EAC === "" ? "VS" : (isFora ? j.Gols_Adv + ":" + j.Gols_EAC : j.Gols_EAC + ":" + j.Gols_Adv)}</div>
+                    <div class="team"><img src="${isFora ? logoEAC : j.Logo_Adversario}" onerror="this.src='https://via.placeholder.com/50'"><b>${isFora ? 'EAC' : j.Adversário}</b></div>
+                </div>
+                <div class="btn-group">
+                    <a href="${j.Link_GPS}" target="_blank" class="btn btn-gps">ABRIR MAPA</a>
+                    <button class="btn btn-info" onclick="alert('Local: ${j.Local}')">DETALHES</button>
+                </div>
+            </div>`;
+    }
 
-window.onload = init;
+    function renderAtletas(esc) {
+        showView('dynamic');
+        document.getElementById('dyn-title').innerText = "ELENCO " + esc;
+        const lista = DB.atletas.filter(a => a.Escalão && a.Escalão.includes(esc));
+        document.getElementById('dyn-content').innerHTML = lista.map(a => `
+            <div class="atleta-item">
+                <img src="${a.Foto}" class="atleta-img" onerror="this.src='https://via.placeholder.com/50'">
+                <div><b>${a.Nome}</b><br><small>#${a.Número} | ${a.Posição}</small></div>
+            </div>
+        `).join('');
+    }
+
+    function renderCalendario() {
+        showView('dynamic');
+        document.getElementById('dyn-title').innerText = "CALENDÁRIO DE JOGOS";
+        document.getElementById('dyn-content').innerHTML = DB.jogos.map(j => cardJogo(j)).join('');
+    }
+
+    function showView(v) {
+        document.getElementById('view-home').style.display = (v === 'home' ? 'block' : 'none');
+        document.getElementById('view-dynamic').style.display = (v === 'dynamic' ? 'block' : 'none');
+        toggleMenu(true);
+    }
+
+    function toggleMenu(forceClose = false) {
+        const s = document.getElementById('sidebar');
+        const o = document.getElementById('overlay');
+        if(forceClose) { s.classList.remove('active'); o.style.display = 'none'; return; }
+        s.classList.toggle('active');
+        o.style.display = s.classList.contains('active') ? 'block' : 'none';
+    }
+
+    window.onload = init;
 </script>
 </body>
 </html>
