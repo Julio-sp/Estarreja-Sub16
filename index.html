@@ -103,7 +103,7 @@
     <div id="homeNext">
         <h3 style="font-weight:900; color: var(--eac-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px">
             <span style="width: 5px; height: 25px; background: var(--verde); display: block; border-radius: 10px"></span>
-            PRÓXIMOS DESAFIOS
+            <span id="nextTitle">PRÓXIMOS DESAFIOS</span>
         </h3>
         <div id="homeNextContent"></div>
     </div>
@@ -194,9 +194,20 @@ function renderJogos(filtro) {
         const isFora = clean(getVal(j, 'local')).includes("fora");
         const cor = (gEAC > gADV) ? "var(--verde)" : (gEAC < gADV) ? "var(--vermelho)" : (isNaN(gEAC) ? "#cbd5e1" : "var(--azul)");
         
-        // RECUPERAÇÃO DOS RESULTADOS PARCIAIS
-        const res1 = getVal(j, 'resultado_1parte');
-        const res2 = getVal(j, 'resultado_2parte');
+        // RECUPERAÇÃO E FORMATAÇÃO DOS RESULTADOS PARCIAIS (RESPEITANDO MANDO DE CAMPO)
+        let res1_display = "";
+        let res2_display = "";
+        const res1_raw = getVal(j, 'resultado_1parte');
+        const res2_raw = getVal(j, 'resultado_2parte');
+
+        if(res1_raw) {
+            const p1 = res1_raw.split('-').map(n => n.trim());
+            res1_display = isFora ? `${p1[1]}-${p1[0]}` : `${p1[0]}-${p1[1]}`;
+        }
+        if(res2_raw) {
+            const p2 = res2_raw.split('-').map(n => n.trim());
+            res2_display = isFora ? `${p2[1]}-${p2[0]}` : `${p2[0]}-${p2[1]}`;
+        }
 
         html += `
         <div class="game-card">
@@ -207,7 +218,7 @@ function renderJogos(filtro) {
                     <div class="team"><img src="${isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'"><span>${isFora?getVal(j,'adversário'):'EAC'}</span></div>
                     <div class="score-box">
                         <div class="score-main">${isNaN(gEAC)?'VS': (isFora ? gADV+'-'+gEAC : gEAC+'-'+gADV)}</div>
-                        ${res1 ? `<div class="score-parcial">Int: ${res1} | Fim: ${res2 || '-'}</div>` : ''}
+                        ${res1_display ? `<div class="score-parcial">Int: ${res1_display} | Fim: ${res2_display || '-'}</div>` : ''}
                     </div>
                     <div class="team"><img src="${!isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'"><span>${!isFora?getVal(j,'adversário'):'EAC'}</span></div>
                 </div>
@@ -367,7 +378,6 @@ function renderNiverMenu() {
 function showNiver(m) {
     showView('custom');
     
-    // FILTRAGEM PARA NOMES ÚNICOS:
     const nomesVistos = new Set();
     const listaUnica = DB.atletas.filter(a => {
         const mesNasc = parseInt(getVal(a, 'nascimento').split('/')[1]);
