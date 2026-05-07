@@ -135,7 +135,6 @@ const getVal = (obj, key) => {
     return foundKey ? obj[foundKey] : "";
 };
 
-// --- FUNÇÃO CORRIGIDA PARA FORMATAR RESULTADOS PARCIAIS ---
 function formatParcial(val, isFora) {
     if(!val || val.trim() === "" || !val.includes('-')) return "00-00";
     if(!isFora) return val;
@@ -200,7 +199,6 @@ function renderJogos(filtro) {
         const gEAC = parseInt(getVal(j, 'gols_eac')), gADV = parseInt(getVal(j, 'gols_adv'));
         const isFora = clean(getVal(j, 'local')).includes("fora");
         
-        // Lógica de cor melhorada para evitar erros se for NaN
         let cor = "#cbd5e1"; 
         if(!isNaN(gEAC) && !isNaN(gADV)) {
             cor = (gEAC > gADV) ? "var(--verde)" : (gEAC < gADV) ? "var(--vermelho)" : "var(--azul)";
@@ -364,6 +362,7 @@ function renderHomeNext() {
 
     document.getElementById('homeNextContent').innerHTML = proximos.map(j => {
         const isFora = clean(getVal(j, 'local')).includes("fora");
+        const linkMaps = getVal(j, 'Link_maps');
         return `
         <div class="game-card" style="border-left: 6px solid var(--azul);">
             <div class="game-content" style="padding: 15px;">
@@ -373,8 +372,11 @@ function renderHomeNext() {
                     <div class="score-box"><div class="score-main" style="font-size: 1.2rem; color: #94a3b8;">VS</div></div>
                     <div class="team"><img src="${!isFora ? getVal(j, 'logo_adversario') : 'logo.png'}" onerror="this.src='logo.png'" style="width:40px; height:40px;"><span>${!isFora ? getVal(j, 'adversário') : 'EAC'}</span></div>
                 </div>
-                <div style="font-size: 0.75rem; color: #64748b; font-weight: 700; margin-top: 10px; display: flex; align-items: center; gap: 5px;">
-                    📍 ${getVal(j, 'local')}
+                <div style="margin-top: 10px;">
+                    ${linkMaps ? 
+                        `<a href="${linkMaps}" target="_blank" style="text-decoration:none; font-size: 0.75rem; color: #1e40af; font-weight: 800; display: flex; align-items: center; gap: 5px;">📍 ${getVal(j, 'local')}</a>` : 
+                        `<span style="font-size: 0.75rem; color: #64748b; font-weight: 700; display: flex; align-items: center; gap: 5px;">📍 ${getVal(j, 'local')}</span>`
+                    }
                 </div>
             </div>
         </div>`;
