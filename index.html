@@ -68,65 +68,58 @@
         
         .treino-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; border-left: 6px solid var(--azul); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
-        /* --- ESTILOS DO CAMPO TÁTICO HORIZONTAL (ALTERADO) --- */
-        .tactical-container { margin-top: 25px; border-top: 2px dashed #e2e8f0; padding-top: 20px; }
+        /* --- NOVO CAMPO TÁTICO VERTICAL (MOBILE OPTIMIZED) --- */
+        .tactical-container { margin-top: 25px; border-top: 2px dashed #e2e8f0; padding-top: 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
         .tactical-title { font-size: 0.75rem; font-weight: 800; color: var(--azul); letter-spacing: 1px; margin-bottom: 15px; display: block; text-transform: uppercase; }
         
         .handball-field { 
-            background: #1e3a8a; 
+            background: #2e7d32; 
             width: 100%; 
-            aspect-ratio: 1.6 / 1; /* Proporção horizontal */
-            border: 2px solid white; 
+            max-width: 380px;
+            aspect-ratio: 1 / 1.6; /* Vertical */
+            border: 3px solid rgba(255,255,255,0.9); 
             border-radius: 10px; 
             position: relative; 
             overflow: hidden;
-            box-shadow: inset 0 0 100px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        /* Linhas e Áreas do Campo Horizontal */
-        .area-left { position: absolute; left: -20px; top: 15%; bottom: 15%; width: 70px; border: 2px solid white; border-radius: 0 100px 100px 0; }
-        .field-line-center { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.4); }
+        /* Linhas do Campo Vertical */
+        .field-mid { position: absolute; top: 50%; width: 100%; height: 2px; background: rgba(255,255,255,0.6); }
+        .field-circle { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border: 2px solid rgba(255,255,255,0.6); border-radius: 50%; }
+        .field-semi-def { position: absolute; top: -2px; left: 50%; transform: translateX(-50%); width: 160px; height: 80px; border: 2px solid white; border-radius: 0 0 80px 80px; }
+        .field-semi-atk { position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 160px; height: 80px; border: 2px solid white; border-radius: 80px 80px 0 0; }
 
+        /* Jogadoras */
         .player-node { 
             position: absolute; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            width: 90px; 
-            transform: translate(-50%, -50%); 
+            width: 85px; 
+            transform: translateX(-50%); 
             z-index: 5;
         }
         
-        .node-list {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            align-items: center;
-        }
-
         .node-player-item {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 4px;
-            background: rgba(22, 163, 74, 0.95); 
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1px solid white;
-            white-space: nowrap;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 5px;
         }
 
-        .node-num { font-size: 9px; font-weight: 800; color: #fff; background: rgba(0,0,0,0.3); padding: 0 3px; border-radius: 2px; }
-        .node-name { font-size: 8.5px; font-weight: 700; color: white; text-transform: uppercase; }
+        .node-icon { width: 30px; height: 30px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; color: #1b5e20; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .node-name { font-size: 10px; color: white; text-shadow: 1px 1px 2px black; text-align: center; margin-top: 3px; font-weight: 600; white-space: nowrap; }
+        .node-sigla { font-size: 8px; color: #ccffcc; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
 
-        /* COORDENADAS HORIZONTAIS CONFORME SOLICITADO */
-        .pos-GL  { top: 50%;  left: 10%; } /* Goleira na linha de fundo esquerda */
-        .pos-PD  { top: 20%;  left: 28%; } /* Superior Esquerda */
-        .pos-LD  { top: 35%;  left: 55%; } /* Superior Direita interna */
-        .pos-CEN { top: 50%;  left: 80%; } /* Centralizado no ataque */
-        .pos-LE  { top: 65%;  left: 55%; } /* Inferior Direita interna */
-        .pos-PE  { top: 80%;  left: 28%; } /* Inferior Esquerda */
-        .pos-PIV { top: 50%;  left: 45%; } /* Pivô entre a defesa e o centro */
+        /* COORDENADAS REINVERTIDAS E ESPAÇADAS */
+        .pos-GL  { top: 5%;  left: 50%; }
+        .pos-PE  { top: 18%; left: 15%; }
+        .pos-PD  { top: 18%; left: 85%; }
+        .pos-LE  { top: 42%; left: 25%; } /* No círculo do meio */
+        .pos-LD  { top: 42%; left: 75%; } /* No círculo do meio */
+        .pos-CEN { top: 62%; left: 50%; }
+        .pos-PIV { top: 82%; left: 50%; } /* Antes do semi círculo ataque */
 
     </style>
 </head>
@@ -244,45 +237,55 @@ async function loadData() {
     renderNiverMenu();
 }
 
-/* --- FUNÇÃO DE CAMPO TÁTICO MANTIDA COM LÓGICA DE NOMES E POSIÇÕES --- */
+/* --- FUNÇÃO DE CAMPO TÁTICO ATUALIZADA (VERTICAL + NOME_EXIBICAO) --- */
 function buildTacticalField(idJogo) {
     const convocadas = DB.convocados.filter(c => getVal(c, 'jogo_id') == idJogo);
     if (convocadas.length === 0) return "";
 
     const grupos = {};
+    const siglasPos = { 'GL': 'GL', 'PE': 'PE', 'PD': 'PD', 'LE': 'LE', 'LD': 'LD', 'CEN': 'CEN', 'PIV': 'PIV' };
+
     convocadas.forEach(c => {
         const pos = getVal(c, 'posicao_campo').toUpperCase();
         if(!grupos[pos]) grupos[pos] = [];
         
         const info = DB.atletas.find(at => clean(getVal(at, 'nome')) === clean(getVal(c, 'nome')));
+        
+        // BUSCA COLUNA E (nome_exibicao) - Ajustado para row[4] ou nome da chave
+        const nExibicao = getVal(c, 'nome_exibicao'); 
+        
         grupos[pos].push({
-            nome: getVal(c, 'nome').split(' ')[0],
-            num: info ? getVal(info, 'número') : "?"
+            nome: nExibicao || getVal(c, 'nome').split(' ')[0],
+            num: info ? getVal(info, 'número') : "?",
+            sigla: pos
         });
     });
 
     let playersHTML = "";
     Object.keys(grupos).forEach(pos => {
         const atletasPos = grupos[pos];
-        let itemsHTML = atletasPos.map(a => `
-            <div class="node-player-item">
-                <span class="node-name">${a.nome}</span>
-                <span class="node-num">${a.num}</span>
+        let itemsHTML = atletasPos.map((a, idx) => `
+            <div class="node-player-item" style="${idx > 0 ? 'margin-top: 5px;' : ''}">
+                <div class="node-sigla">${a.sigla}</div>
+                <div class="node-icon">${a.num}</div>
+                <div class="node-name">${a.nome}</div>
             </div>
         `).join('');
 
         playersHTML += `
             <div class="player-node pos-${pos}">
-                <div class="node-list">${itemsHTML}</div>
+                ${itemsHTML}
             </div>`;
     });
 
     return `
         <div class="tactical-container">
-            <span class="tactical-title">📋 Convocatória</span>
+            <span class="tactical-title">📋 Campo Tático</span>
             <div class="handball-field">
-                <div class="area-left"></div>
-                <div class="field-line-center"></div>
+                <div class="field-semi-def"></div>
+                <div class="field-mid"></div>
+                <div class="field-circle"></div>
+                <div class="field-semi-atk"></div>
                 ${playersHTML}
             </div>
         </div>`;
