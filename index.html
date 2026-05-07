@@ -178,10 +178,10 @@ async function loadData() {
 function renderJogos(filtro) {
     document.getElementById('filterArea').innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(b => 
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderJogos('${b}')">${b}</button>`).join('');
-    
+
     let lista = (filtro === 'TODOS') ? [...DB.jogos] : DB.jogos.filter(j => clean(getVal(j, 'escalao')) === clean(filtro));
     lista.sort((a,b) => parseDate(getVal(b, 'data')) - parseDate(getVal(a, 'data')));
-    
+
     const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
     let html = "", ultimoMes = "";
 
@@ -189,46 +189,42 @@ function renderJogos(filtro) {
         const d = parseDate(getVal(j, 'data'));
         const mesAno = `${meses[d.getMonth()]} ${d.getFullYear()}`;
         if(mesAno !== ultimoMes) { html += `<div class="month-divider">${mesAno}</div>`; ultimoMes = mesAno; }
-        
+
         const gEAC = parseInt(getVal(j, 'gols_eac')), gADV = parseInt(getVal(j, 'gols_adv'));
         const isFora = clean(getVal(j, 'local')).includes("fora");
         const cor = (gEAC > gADV) ? "var(--verde)" : (gEAC < gADV) ? "var(--vermelho)" : (isNaN(gEAC) ? "#cbd5e1" : "var(--azul)");
-        
-        let res1_display = "";
-        let res2_display = "";
-        const res1_raw = getVal(j, 'resultado_1parte');
-        const res2_raw = getVal(j, 'resultado_2parte');
-
-        if(res1_raw && res1_raw.includes('-')) {
-            const p1 = res1_raw.split('-').map(n => n.trim());
-            res1_display = isFora ? `${p1[1]}-${p1[0]}` : `${p1[0]}-${p1[1]}`;
-        }
-        if(res2_raw && res2_raw.includes('-')) {
-            const p2 = res2_raw.split('-').map(n => n.trim());
-            res2_display = isFora ? `${p2[1]}-${p2[0]}` : `${p2[0]}-${p2[1]}`;
-        }
+        const hora = getVal(j, 'hora');
 
         html += `
         <div class="game-card">
             <div class="game-status-bar" style="background:${cor}"></div>
             <div class="game-content">
-                <div class="game-header"><span>${getVal(j, 'data')} • ${getVal(j,'hora')}</span><span>${getVal(j, 'escalao')}</span></div>
+                <div class="game-header">
+                    <span>${getVal(j, 'data')} ${hora ? ' • '+hora : ''}</span>
+                    <span>${getVal(j, 'escalao')}</span>
+                </div>
                 <div class="game-main">
-                    <div class="team"><img src="${isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'"><span>${isFora?getVal(j,'adversário'):'EAC'}</span></div>
+                    <div class="team">
+                        <img src="${isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'">
+                        <span>${isFora?getVal(j,'adversário'):'EAC'}</span>
+                    </div>
                     <div class="score-box">
                         <div class="score-main">${isNaN(gEAC)?'VS': (isFora ? gADV+'-'+gEAC : gEAC+'-'+gADV)}</div>
-                        ${res1_display ? `<div class="score-parcial">Int: ${res1_display} | Fim: ${res2_display || '-'}</div>` : ''}
+                        ${!isNaN(gEAC)?`<div class="score-parcial">${formatParcial(getVal(j,'res_1p'), isFora)} | ${formatParcial(getVal(j,'res_2p'), isFora)}</div>`:''}
                     </div>
-                    <div class="team"><img src="${!isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'"><span>${!isFora?getVal(j,'adversário'):'EAC'}</span></div>
+                    <div class="team">
+                        <img src="${!isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'">
+                        <span>${!isFora?getVal(j,'adversário'):'EAC'}</span>
+                    </div>
                 </div>
                 <div class="btn-row">
                     ${!isNaN(gEAC)?`<button class="info-btn" onclick="openJogo('${getVal(j,'id')}')">+ INFO JOGO</button>`:''}
-                    ${getVal(j,'Link_maps')?`<a href="${getVal(j,'Link_maps')}" target="_blank" class="maps-btn">📍 LOCAL</a>`:''}
+                    ${getVal(j,'Link_maps')?`<a href="${getVal(j,'Link_maps')}" target="_blank" class="maps-btn">📍 VER LOCAL</a>`:''}
                 </div>
             </div>
         </div>`;
     });
-    document.getElementById('viewContent').innerHTML = html;
+    document.getElementById('viewContent').innerHTML = html || "<p style='text-align:center; padding:40px; color:#94a3b8'>Sem jogos para mostrar.</p>";
 }
 
 function openJogo(id) {
