@@ -96,8 +96,8 @@
     <a onclick="showView('home')">🏠 INÍCIO</a>
     <a id="menu-artilharia" style="display:none" onclick="showView('artilharia')">⚽ ARTILHARIA</a>
     <a onclick="showView('jogos')">📅 CALENDÁRIO & RESULTADOS</a>
-    <a onclick="toggleSub('sub-atletas')">👥 NOSSAS ATLETAS ▼</a>
-    <div id="sub-atletas" class="submenu">
+    <a onclick="toggleSub('sub-atlet')">👥 NOSSAS ATLETAS ▼</a>
+    <div id="sub-atlet" class="submenu">
         <a onclick="showView('atletas', 'SUB16')">🔹 ESCALÃO SUB16</a>
         <a onclick="showView('atletas', 'SUB18')">🔹 ESCALÃO SUB18</a>
     </div>
@@ -142,7 +142,6 @@ const LINKS = {
 
 let DB = { atletas: [], jogos: [], scout: [] };
 
-// UTILITÁRIOS DE BUSCA ROBUSTA
 const clean = (t) => t ? t.toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
 const getVal = (obj, key) => {
     const foundKey = Object.keys(obj).find(k => clean(k) === clean(key));
@@ -155,7 +154,6 @@ function parseDate(str) {
     return new Date(p[2], p[1]-1, p[0]);
 }
 
-// CARREGAMENTO COMPLETO
 async function loadData() {
     const fetchCSV = async (url) => {
         try {
@@ -177,19 +175,24 @@ async function loadData() {
     renderHomeNext();
 }
 
-// TOGGLE HISTÓRICO EXPANSÍVEL
+// Lógica de inversão de parcial baseada no local
+function formatParcial(stringParcial, isFora) {
+    if(!stringParcial || !stringParcial.includes("-")) return stringParcial;
+    if(!isFora) return stringParcial;
+    const partes = stringParcial.split("-");
+    return `${partes[1].trim()} - ${partes[0].trim()}`;
+}
+
 function toggleStatHistory(type) {
     const el = document.getElementById(`hist-${type}`);
     const isVisible = el.style.display === 'block';
     el.style.display = isVisible ? 'none' : 'block';
 }
 
-// PERFIL DA ATLETA COM HISTÓRICO "OPÇÃO A"
 function openAtleta(nome) {
     const a = DB.atletas.find(x => clean(getVal(x, 'nome')) === clean(nome));
     const sc = DB.scout.filter(x => clean(getVal(x, 'nome')) === clean(nome));
     
-    // Filtrar dados para histórico
     const golosHist = sc.filter(s => parseInt(getVal(s, 'golos')) > 0);
     const exclHist = sc.filter(s => parseInt(getVal(s, 'exclusoes')) > 0);
 
@@ -235,7 +238,6 @@ function openAtleta(nome) {
     document.getElementById('detailPane').classList.add('open');
 }
 
-// LISTA DE JOGOS COM LOGOS E PARCIAIS ORIGINAIS
 function renderJogos(filtro) {
     document.getElementById('filterArea').innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(b => 
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderJogos('${b}')">${b}</button>`).join('');
@@ -254,12 +256,16 @@ function renderJogos(filtro) {
         const gEAC = parseInt(getVal(j, 'gols_eac')), gADV = parseInt(getVal(j, 'gols_adv'));
         const isFora = clean(getVal(j, 'local')).includes("fora");
         const cor = (gEAC > gADV) ? "var(--verde)" : (gEAC < gADV) ? "var(--vermelho)" : (isNaN(gEAC) ? "#cbd5e1" : "var(--azul)");
+        const hora = getVal(j, 'hora');
 
         html += `
         <div class="game-card">
             <div class="game-status-bar" style="background:${cor}"></div>
             <div class="game-content">
-                <div class="game-header"><span>${getVal(j, 'data')} • ${getVal(j, 'escalao')}</span></div>
+                <div class="game-header">
+                    <span>${getVal(j, 'data')} ${hora ? ' • '+hora : ''}</span>
+                    <span>${getVal(j, 'escalao')}</span>
+                </div>
                 <div class="game-main">
                     <div class="team">
                         <img src="${isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'">
@@ -267,7 +273,7 @@ function renderJogos(filtro) {
                     </div>
                     <div class="score-box">
                         <div class="score-main">${isNaN(gEAC)?'VS': (isFora ? gADV+'-'+gEAC : gEAC+'-'+gADV)}</div>
-                        ${!isNaN(gEAC)?`<div class="score-parcial">${getVal(j,'res_1p')} | ${getVal(j,'res_2p')}</div>`:''}
+                        ${!isNaN(gEAC)?`<div class="score-parcial">${formatParcial(getVal(j,'res_1p'), isFora)} | ${formatParcial(getVal(j,'res_2p'), isFora)}</div>`:''}
                     </div>
                     <div class="team">
                         <img src="${!isFora?getVal(j,'logo_adversario'):'logo.png'}" onerror="this.src='logo.png'">
@@ -284,7 +290,6 @@ function renderJogos(filtro) {
     document.getElementById('viewContent').innerHTML = html || "<p style='text-align:center; padding:40px; color:#94a3b8'>Sem jogos para mostrar.</p>";
 }
 
-// PRÓXIMOS JOGOS NA HOME (ATUALIZADO PARA FORMATO DE CARD COM LOGOS E LOCAL)
 function renderHomeNext() {
     const hoje = new Date(2026, 4, 6);
     const proximos = DB.jogos
@@ -294,11 +299,13 @@ function renderHomeNext() {
 
     document.getElementById('homeNextContent').innerHTML = proximos.map(j => {
         const isFora = clean(getVal(j, 'local')).includes("fora");
+        const hora = getVal(j, 'hora');
         return `
         <div class="game-card" style="margin-bottom: 15px; border-left: 6px solid var(--azul);">
             <div class="game-content" style="padding: 15px;">
                 <div class="game-header" style="margin-bottom: 10px;">
-                    <span>${getVal(j, 'data')} • ${getVal(j, 'escalao')}</span>
+                    <span>${getVal(j, 'data')} ${hora ? ' • '+hora : ''}</span>
+                    <span>${getVal(j, 'escalao')}</span>
                 </div>
                 <div class="game-main">
                     <div class="team">
@@ -323,14 +330,13 @@ function renderHomeNext() {
     }).join('') || "<p style='color:#94a3b8; text-align:center;'>Calendário concluído.</p>";
 }
 
-// INFO DO JOGO COM NOMES ORIGINAIS (RECUPERADO)
 function openJogo(id) {
     const j = DB.jogos.find(x => getVal(x, 'id') == id);
     const sc = DB.scout.filter(s => getVal(s, 'jogo_id') == id);
     document.getElementById('detailBody').innerHTML = `
         <div style="padding:25px">
             <h3 style="margin:0; font-weight:900">${getVal(j,'escalao')} vs ${getVal(j,'adversário')}</h3>
-            <p style="color:#94a3b8; font-weight:800; margin-bottom:30px">${getVal(j,'data')} • ${getVal(j,'local')}</p>
+            <p style="color:#94a3b8; font-weight:800; margin-bottom:30px">${getVal(j,'data')} ${getVal(j,'hora') ? ' • '+getVal(j,'hora') : ''} • ${getVal(j,'local')}</p>
             
             <div style="background: #f8fafc; border-radius: 20px; overflow: hidden; border: 1px solid #f1f5f9">
                 <div style="padding: 15px 20px; background: #e2e8f0; font-weight: 900; font-size: 0.8rem; display: flex; justify-content: space-between">
@@ -351,7 +357,6 @@ function openJogo(id) {
     document.getElementById('detailPane').classList.add('open');
 }
 
-// RESTANTE DAS FUNÇÕES (ARTILHARIA, NIVER, TREINOS)
 function renderArt(f) {
     document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => `<button class="tab-btn ${f===b?'active':''}" onclick="renderArt('${b}')">${b}</button>`).join('');
     let atletas = [...new Set(DB.atletas.map(a => getVal(a,'nome')))];
