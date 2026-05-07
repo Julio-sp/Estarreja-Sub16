@@ -194,17 +194,16 @@ function renderJogos(filtro) {
         const isFora = clean(getVal(j, 'local')).includes("fora");
         const cor = (gEAC > gADV) ? "var(--verde)" : (gEAC < gADV) ? "var(--vermelho)" : (isNaN(gEAC) ? "#cbd5e1" : "var(--azul)");
         
-        // RECUPERAÇÃO E FORMATAÇÃO DOS RESULTADOS PARCIAIS (RESPEITANDO MANDO DE CAMPO)
         let res1_display = "";
         let res2_display = "";
         const res1_raw = getVal(j, 'resultado_1parte');
         const res2_raw = getVal(j, 'resultado_2parte');
 
-        if(res1_raw) {
+        if(res1_raw && res1_raw.includes('-')) {
             const p1 = res1_raw.split('-').map(n => n.trim());
             res1_display = isFora ? `${p1[1]}-${p1[0]}` : `${p1[0]}-${p1[1]}`;
         }
-        if(res2_raw) {
+        if(res2_raw && res2_raw.includes('-')) {
             const p2 = res2_raw.split('-').map(n => n.trim());
             res2_display = isFora ? `${p2[1]}-${p2[0]}` : `${p2[0]}-${p2[1]}`;
         }
@@ -326,7 +325,7 @@ function renderTreinos() {
         <div class="treino-card">
             <b style="display:block; font-size:1.1rem; color:var(--azul)">🏟️ Pavilhão Municipal de Estarreja</b>
             <p style="margin:10px 0; font-weight:600; font-size:0.9rem; color:#475569">
-                Segundas e Quartas-feiras<br>
+                Quarta<br>
                 Sub16 e Sub18: 19:00 - 20:30
             </p>
             <a href="https://maps.google.com/?q=Pavilhão+Municipal+Estarreja" target="_blank" class="maps-btn" style="display:inline-block; padding:8px 15px">VER NO MAPA</a>
@@ -334,8 +333,8 @@ function renderTreinos() {
         <div class="treino-card" style="border-left-color: var(--verde)">
             <b style="display:block; font-size:1.1rem; color:var(--verde)">🏟️ Pavilhão Escola Secundária</b>
             <p style="margin:10px 0; font-weight:600; font-size:0.9rem; color:#475569">
-                Sextas-feiras<br>
-                Treino Técnico: 18:30 - 20:00
+                Terça e Sexta<br>
+                Sub16 e Sub18: 19:00 - 20:30
             </p>
             <a href="https://maps.google.com/?q=Escola+Secundária+Estarreja" target="_blank" class="maps-btn" style="display:inline-block; padding:8px 15px; background:#dcfce7; color:#166534">VER NO MAPA</a>
         </div>`;
@@ -365,6 +364,12 @@ function renderHomeNext() {
                     <div class="score-box"><div class="score-main" style="font-size: 1.2rem; color: #94a3b8;">VS</div></div>
                     <div class="team"><img src="${!isFora ? getVal(j, 'logo_adversario') : 'logo.png'}" onerror="this.src='logo.png'" style="width:40px; height:40px;"><span>${!isFora ? getVal(j, 'adversário') : 'EAC'}</span></div>
                 </div>
+                <div style="font-size: 0.75rem; color: #64748b; font-weight: 700; margin-top: 10px; display: flex; align-items: center; gap: 5px;">
+                    📍 ${getVal(j, 'local')}
+                </div>
+                <div class="btn-row" style="margin-top: 10px;">
+                    ${getVal(j,'Link_maps')?`<a href="${getVal(j,'Link_maps')}" target="_blank" class="maps-btn" style="padding: 8px;">📍 LOCAL</a>`:''}
+                </div>
             </div>
         </div>`;
     }).join('') || "<p style='color:#94a3b8; text-align:center;'>Sem jogos marcados.</p>";
@@ -380,7 +385,9 @@ function showNiver(m) {
     
     const nomesVistos = new Set();
     const listaUnica = DB.atletas.filter(a => {
-        const mesNasc = parseInt(getVal(a, 'nascimento').split('/')[1]);
+        const mPart = getVal(a, 'nascimento').split('/');
+        if(mPart.length < 2) return false;
+        const mesNasc = parseInt(mPart[1]);
         const nomeLimpo = clean(getVal(a, 'nome'));
         if (mesNasc === m && !nomesVistos.has(nomeLimpo)) {
             nomesVistos.add(nomeLimpo);
@@ -397,7 +404,7 @@ function showView(v, p = '') {
     if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
     document.getElementById('viewContent').innerHTML = ""; document.getElementById('filterArea').innerHTML = "";
-    if(v === 'home') document.getElementById('home').classList.add('active');
+    if(v === 'home') { document.getElementById('home').classList.add('active'); renderHomeNext(); }
     else { 
         document.getElementById('mainView').classList.add('active'); 
         if(v === 'jogos') renderJogos('TODOS'); 
