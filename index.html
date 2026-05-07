@@ -266,7 +266,7 @@ function renderJogos(filtro) {
                         <span>${isFora?getVal(j,'adversário'):'EAC'}</span>
                     </div>
                     <div class="score-box">
-                        <div class="score-main">${isNaN(gEAC)?'VS':gEAC+'-'+gADV}</div>
+                        <div class="score-main">${isNaN(gEAC)?'VS': (isFora ? gADV+'-'+gEAC : gEAC+'-'+gADV)}</div>
                         ${!isNaN(gEAC)?`<div class="score-parcial">${getVal(j,'res_1p')} | ${getVal(j,'res_2p')}</div>`:''}
                     </div>
                     <div class="team">
