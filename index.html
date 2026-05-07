@@ -366,11 +366,21 @@ function renderNiverMenu() {
 
 function showNiver(m) {
     showView('custom');
-    let lista = DB.atletas.filter(a => parseInt(getVal(a,'nascimento').split('/')[1]) === m)
-        .sort((a,b) => parseInt(getVal(a,'nascimento').split('/')[0]) - parseInt(getVal(b,'nascimento').split('/')[0]));
+    
+    // FILTRAGEM PARA NOMES ÚNICOS:
+    const nomesVistos = new Set();
+    const listaUnica = DB.atletas.filter(a => {
+        const mesNasc = parseInt(getVal(a, 'nascimento').split('/')[1]);
+        const nomeLimpo = clean(getVal(a, 'nome'));
+        if (mesNasc === m && !nomesVistos.has(nomeLimpo)) {
+            nomesVistos.add(nomeLimpo);
+            return true;
+        }
+        return false;
+    }).sort((a, b) => parseInt(getVal(a, 'nascimento').split('/')[0]) - parseInt(getVal(b, 'nascimento').split('/')[0]));
     
     document.getElementById('viewContent').innerHTML = `<h3 style="margin-bottom:25px; font-weight:900">Aniversariantes 🎂</h3>` + 
-    (lista.map(n => `<div style="background:white; padding:18px; margin-bottom:10px; border-radius:15px; display:flex; justify-content:space-between"><b>${getVal(n,'nome')}</b><b style="color:var(--verde)">Dia ${getVal(n,'nascimento').split('/')[0]}</b></div>`).join('') || "<p>Sem aniversários este mês.</p>");
+    (listaUnica.map(n => `<div style="background:white; padding:18px; margin-bottom:10px; border-radius:15px; display:flex; justify-content:space-between"><b>${getVal(n,'nome')}</b><b style="color:var(--verde)">Dia ${getVal(n,'nascimento').split('/')[0]}</b></div>`).join('') || "<p>Sem aniversários este mês.</p>");
 }
 
 function showView(v, p = '') {
