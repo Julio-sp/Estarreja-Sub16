@@ -284,7 +284,7 @@ function renderJogos(filtro) {
     document.getElementById('viewContent').innerHTML = html || "<p style='text-align:center; padding:40px; color:#94a3b8'>Sem jogos para mostrar.</p>";
 }
 
-// PRÓXIMOS JOGOS NA HOME (RECUPERADO)
+// PRÓXIMOS JOGOS NA HOME (ATUALIZADO PARA FORMATO DE CARD COM LOGOS E LOCAL)
 function renderHomeNext() {
     const hoje = new Date(2026, 4, 6);
     const proximos = DB.jogos
@@ -292,14 +292,35 @@ function renderHomeNext() {
         .sort((a,b) => parseDate(getVal(a, 'data')) - parseDate(getVal(b, 'data')))
         .slice(0, 2);
 
-    document.getElementById('homeNextContent').innerHTML = proximos.map(j => `
-        <div style="background:white; padding:22px; border-radius:18px; margin-bottom:12px; border-left:6px solid var(--azul); display:flex; justify-content:space-between; align-items:center; box-shadow: 0 4px 12px rgba(0,0,0,0.06)">
-            <div>
-                <b style="font-size: 1.1rem; display: block; color: var(--eac-dark)">${getVal(j, 'data')}</b>
-                <span style="color:#64748b; font-weight:800; font-size:0.75rem; text-transform:uppercase">${getVal(j, 'escalao')}</span>
+    document.getElementById('homeNextContent').innerHTML = proximos.map(j => {
+        const isFora = clean(getVal(j, 'local')).includes("fora");
+        return `
+        <div class="game-card" style="margin-bottom: 15px; border-left: 6px solid var(--azul);">
+            <div class="game-content" style="padding: 15px;">
+                <div class="game-header" style="margin-bottom: 10px;">
+                    <span>${getVal(j, 'data')} • ${getVal(j, 'escalao')}</span>
+                </div>
+                <div class="game-main">
+                    <div class="team">
+                        <img src="${isFora ? getVal(j, 'logo_adversario') : 'logo.png'}" onerror="this.src='logo.png'" style="width:40px; height:40px;">
+                        <span style="font-size: 0.75rem;">${isFora ? getVal(j, 'adversário') : 'EAC'}</span>
+                    </div>
+                    <div class="score-box" style="min-width: 60px;">
+                        <div class="score-main" style="font-size: 1.2rem; color: #94a3b8;">VS</div>
+                    </div>
+                    <div class="team">
+                        <img src="${!isFora ? getVal(j, 'logo_adversario') : 'logo.png'}" onerror="this.src='logo.png'" style="width:40px; height:40px;">
+                        <span style="font-size: 0.75rem;">${!isFora ? getVal(j, 'adversário') : 'EAC'}</span>
+                    </div>
+                </div>
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #f1f5f9; text-align: center;">
+                    <span style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">
+                        📍 ${getVal(j, 'local')}
+                    </span>
+                </div>
             </div>
-            <div style="text-align:right; font-weight:900; color: var(--eac-dark)">vs ${getVal(j, 'adversário')}</div>
-        </div>`).join('') || "<p style='color:#94a3b8'>Calendário concluído.</p>";
+        </div>`;
+    }).join('') || "<p style='color:#94a3b8; text-align:center;'>Calendário concluído.</p>";
 }
 
 // INFO DO JOGO COM NOMES ORIGINAIS (RECUPERADO)
