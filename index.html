@@ -47,7 +47,6 @@
         .info-btn { background: #f1f5f9; color: #475569; }
         .maps-btn { background: #dcfce7; color: #166534; }
 
-        /* --- NOVO ESTILO DA CONVOCATÓRIA EM LISTA (SUBSTITUI CAMPO TÁTICO) --- */
         .conv-container { margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
         .conv-title { font-size: 0.75rem; font-weight: 800; color: var(--azul); letter-spacing: 1px; margin-bottom: 10px; display: block; text-transform: uppercase; }
         .conv-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -63,6 +62,17 @@
         
         .tab-btn { padding:12px 24px; border-radius:25px; border:none; background:#e2e8f0; font-weight:800; cursor:pointer; font-size: 0.85rem; }
         .tab-btn.active { background: var(--azul); color: white; }
+
+        /* --- CORREÇÃO DOS BOTÕES DE ESTATÍSTICA --- */
+        .stat-card { padding: 15px; border-radius: 15px; color: white; cursor: pointer; transition: 0.3s; }
+        .stat-card:active { transform: scale(0.95); }
+        .stat-val { display: block; font-size: 1.8rem; font-weight: 900; }
+        .stat-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+        
+        .history-panel { display: none; background: #f8fafc; margin-top: 10px; border-radius: 12px; padding: 10px; text-align: left; border: 1px solid #e2e8f0; }
+        .history-item { display: flex; justify-content: space-between; font-size: 0.75rem; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+        .history-item:last-child { border: none; }
+        /* ------------------------------------------ */
 
         .badge-2min { background: var(--vermelho); color: white; padding: 4px 10px; border-radius: 8px; font-weight: 800; font-size: 0.75rem; }
         .info-pill { background: #f1f5f9; padding: 10px 15px; border-radius: 12px; font-size: 0.8rem; color: #475569; font-weight: 600; display: inline-block; margin: 5px; }
@@ -184,11 +194,9 @@ async function loadData() {
     renderNiverMenu();
 }
 
-/* --- NOVA FUNÇÃO DE CONVOCATÓRIA: LISTA ROBUSTA POR NÚMERO --- */
 function buildConvocatoriaList(idJogo) {
     const convocadasRaw = DB.convocados.filter(c => getVal(c, 'jogo_id') == idJogo);
     if (convocadasRaw.length === 0) return "";
-
     let listaFinal = convocadasRaw.map(c => {
         const info = DB.atletas.find(at => clean(getVal(at, 'nome')) === clean(getVal(c, 'nome')));
         return {
@@ -196,16 +204,13 @@ function buildConvocatoriaList(idJogo) {
             num: info ? parseInt(getVal(info, 'número')) : 999
         };
     });
-
     listaFinal.sort((a, b) => a.num - b.num);
-
     const itemsHTML = listaFinal.map(a => `
         <div class="conv-item">
             <span class="conv-num">${a.num === 999 ? '?' : a.num}</span>
             <span class="conv-nome">${a.nome}</span>
         </div>
     `).join('');
-
     return `
         <div class="conv-container">
             <span class="conv-title">📋 Convocadas</span>
@@ -216,23 +221,18 @@ function buildConvocatoriaList(idJogo) {
 function renderJogos(filtro) {
     document.getElementById('filterArea').innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(b => 
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderJogos('${b}')">${b}</button>`).join('');
-
     let lista = (filtro === 'TODOS') ? [...DB.jogos] : DB.jogos.filter(j => clean(getVal(j, 'escalao')) === clean(filtro));
     lista.sort((a,b) => parseDate(getVal(b, 'data')) - parseDate(getVal(a, 'data')));
-
     const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
     let html = "", ultimoMes = "";
-
     lista.forEach(j => {
         const d = parseDate(getVal(j, 'data'));
         const mesAno = `${meses[d.getMonth()]} ${d.getFullYear()}`;
         if(mesAno !== ultimoMes) { html += `<div class="month-divider">${mesAno}</div>`; ultimoMes = mesAno; }
-
         const gEAC = parseInt(getVal(j, 'gols_eac')), gADV = parseInt(getVal(j, 'gols_adv'));
         const isFora = clean(getVal(j, 'local')).includes("fora");
         let cor = "#cbd5e1"; 
         if(!isNaN(gEAC) && !isNaN(gADV)) cor = (gEAC > gADV) ? "var(--verde)" : (gEAC < gADV) ? "var(--vermelho)" : "var(--azul)";
-
         html += `
         <div class="game-card">
             <div class="game-status-bar" style="background:${cor}"></div>
@@ -303,8 +303,20 @@ function openAtleta(nome, escalaoFiltro = '') {
                 <span class="info-pill">🎽 Nº ${getVal(a, 'número')} • ${getVal(a, 'posição')}</span>
             </div>
             <div style="display:flex; gap:15px; max-width: 450px; margin: 0 auto">
-                <div style="flex:1"><div class="stat-card" style="background: var(--azul)" onclick="toggleStatHistory('golos')"><span class="stat-val">${totalG}</span><span class="stat-label">Golos ▼</span></div><div id="hist-golos" class="history-panel">${formatHistList(sc, 'golos')}</div></div>
-                <div style="flex:1"><div class="stat-card" style="background: var(--vermelho)" onclick="toggleStatHistory('excl')"><span class="stat-val">${totalE}</span><span class="stat-label">2 Min ▼</span></div><div id="hist-excl" class="history-panel">${formatHistList(sc, 'exclusoes')}</div></div>
+                <div style="flex:1">
+                    <div class="stat-card" style="background: var(--azul)" onclick="toggleStatHistory('golos')">
+                        <span class="stat-val">${totalG}</span>
+                        <span class="stat-label">Golos ▼</span>
+                    </div>
+                    <div id="hist-golos" class="history-panel">${formatHistList(sc, 'golos')}</div>
+                </div>
+                <div style="flex:1">
+                    <div class="stat-card" style="background: var(--vermelho)" onclick="toggleStatHistory('excl')">
+                        <span class="stat-val">${totalE}</span>
+                        <span class="stat-label">2 Min ▼</span>
+                    </div>
+                    <div id="hist-excl" class="history-panel">${formatHistList(sc, 'exclusoes')}</div>
+                </div>
             </div>
         </div>`;
     document.getElementById('detailPane').classList.add('open');
