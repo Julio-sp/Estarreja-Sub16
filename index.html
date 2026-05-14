@@ -186,20 +186,43 @@ async function fetchCSV(url) {
     } catch(e) { return []; }
 }
 
+// CARREGAMENTO OTIMIZADO: Prioriza a Home e carrega o resto em background
 async function loadData() {
-    DB.jogos = await fetchCSV(LINKS.jogos);
-    DB.atletas = await fetchCSV(LINKS.atletas);
-    DB.scout = await fetchCSV(LINKS.scout);
-    DB.convocados = await fetchCSV(LINKS.convocados);
-    renderHomeNext();
-    renderNiverMenu();
+    try {
+        // Passo 1: Baixar o essencial para a Home (Jogos e Convocados) em paralelo
+        const [jogos, convocados] = await Promise.all([
+            fetchCSV(LINKS.jogos),
+            fetchCSV(LINKS.convocados)
+        ]);
+        
+        DB.jogos = jogos;
+        DB.convocados = convocados;
+
+        // Renderiza a Home imediatamente com o que temos
+        renderHomeNext();
+        renderNiverMenu();
+
+        // Passo 2: Baixar Atletas e Scout sem bloquear a interface
+        fetchCSV(LINKS.atletas).then(data => {
+            DB.atletas = data;
+            renderNiverMenu(); 
+            renderHomeNext(); // Re-renderiza para atualizar números das camisolas se necessário
+        });
+
+        fetchCSV(LINKS.scout).then(data => {
+            DB.scout = data;
+        });
+    } catch (e) {
+        console.error("Erro no carregamento:", e);
+    }
 }
 
 function buildConvocatoriaList(idJogo) {
     const convocadasRaw = DB.convocados.filter(c => getVal(c, 'jogo_id') == idJogo);
     if (convocadasRaw.length === 0) return "";
     let listaFinal = convocadasRaw.map(c => {
-        const info = DB.atletas.find(at => clean(getVal(at, 'nome')) === clean(getVal(c, 'nome')));
+        // Fallback caso DB.atletas ainda esteja a carregar em background
+        const info = DB.atletas.length > 0 ? DB.atletas.find(at => clean(getVal(at, 'nome')) === clean(getVal(c, 'nome'))) : null;
         return {
             nome: getVal(c, 'nome_exibicao') || getVal(c, 'nome').split(' ')[0],
             num: info ? parseInt(getVal(info, 'número')) : 999
@@ -235,7 +258,7 @@ function renderJogos(filtro) {
         const mesAno = `${meses[d.getMonth()]} ${d.getFullYear()}`;
         
         if(mesAno !== ultimoMes) {
-            if(ultimoMes !== "") html += `</div>`; // Fecha o container do mês anterior
+            if(ultimoMes !== "") html += `</div>`;
             mesId++;
             html += `
                 <div class="month-divider" onclick="toggleMonth('month-${mesId}')">
@@ -272,8 +295,7 @@ function renderJogos(filtro) {
         </div>`;
     });
     
-    if(html !== "") html += `</div>`; // Fecha o último mês
-
+    if(html !== "") html += `</div>`;
     document.getElementById('viewContent').innerHTML = html || "<p style='text-align:center; padding:40px; color:#94a3b8'>Sem jogos para mostrar.</p>";
 }
 
