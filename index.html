@@ -93,7 +93,7 @@
     <div class="sidebar-content">
         <a onclick="showView('home')">🏠 INÍCIO</a>
         <a id="menu-artilharia" style="display:none" onclick="showView('artilharia')">⚽ ARTILHARIA</a>
-        <a id="menu-participacoes" style="display:none" onclick="showView('participacoes')">🏃‍♀️ PARTICIPAÇÕES</a>
+        <a onclick="showView('participacoes')">🏃‍♀️ PARTICIPAÇÕES</a>
         <a onclick="showView('jogos')">📅 CALENDÁRIO & RESULTADOS</a>
         <a onclick="toggleSub('sub-atlet')">👥 NOSSAS ATLETAS ▼</a>
         <div id="sub-atlet" class="submenu">
@@ -211,7 +211,7 @@ async function loadData() {
 }
 
 function buildConvocatoriaList(idJogo) {
-    const convocadasRaw = DB.convocados.filter(c => getVal(c, 'jogo_id') == idJogo);
+    const convocadasRaw = DB.convocados.filter(c => getVal(c, 'id_jogo') == idJogo); // Corrigido para id_jogo se necessário, ou mantido jogo_id
     if (convocadasRaw.length === 0) return "";
     let listaFinal = convocadasRaw.map(c => {
         const info = DB.atletas.length > 0 ? DB.atletas.find(at => clean(getVal(at, 'nome')) === clean(getVal(c, 'nome'))) : null;
@@ -496,7 +496,6 @@ function closeDetail() { document.getElementById('detailPane').classList.remove(
 function handleLogin() { 
     if(prompt("Senha:") === "eac2026") { 
         document.getElementById('menu-artilharia').style.display='block'; 
-        document.getElementById('menu-participacoes').style.display='block';
         document.getElementById('lock-btn').innerText="🔓"; 
     } 
 }
