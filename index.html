@@ -151,13 +151,13 @@
     <div class="adn-word w-white">COMPROMISSO</div>
     <div class="adn-word w-black">UNIÃO</div>
 </div>
-        <!-- Seção do Próximo Jogo -->
+ <!-- Este bloco DEVE estar na sua tela inicial (Home) -->
 <div id="next-game-container" style="display: none; margin: 20px; padding: 20px; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-left: 8px solid var(--verde);">
     <div style="text-align: center;">
         <span style="color: var(--verde); font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;">Próximo Desafio</span>
-        <h2 id="game-teams" style="margin: 10px 0; font-size: 1.2rem; font-weight: 900;">EAC vs AD VACARIÇA</h2>
+        <h2 style="margin: 10px 0; font-size: 1.2rem; font-weight: 900;">EAC vs AD VACARIÇA</h2>
         
-        <!-- O CONTADOR -->
+        <!-- O CONTADOR (O JS vai escrever aqui dentro) -->
         <div id="countdown" style="display: flex; justify-content: center; gap: 15px; margin: 15px 0;">
             <div class="time-box"><span id="days">00</span><small>Dias</small></div>
             <div class="time-box"><span id="hours">00</span><small>Horas</small></div>
@@ -165,16 +165,15 @@
         </div>
 
         <div style="background: #f8fafc; padding: 10px; border-radius: 12px; margin-top: 10px;">
-            <p style="margin: 0; font-size: 0.85rem; font-weight: 700;">📅 Domingo, 16:00h</p>
-            <p style="margin: 0; font-size: 0.75rem; color: #64748b;">Pavilhão Municipal de Estarreja</p>
+            <p style="margin: 0; font-size: 0.85rem; font-weight: 700;">📅 Domingo, 17 de Maio - 16:00h</p>
         </div>
 
-        <button onclick="showView('convocados')" style="margin-top: 15px; width: 100%; padding: 12px; border-radius: 12px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer;">
+        <!-- BOTÃO PARA A CONVOCATÓRIA -->
+        <button onclick="irParaConvocados()" style="margin-top: 15px; width: 100%; padding: 12px; border-radius: 12px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer;">
             VER CONVOCATÓRIA
         </button>
     </div>
 </div>
-
 <style>
     .time-box { display: flex; flex-direction: column; align-items: center; background: var(--eac-dark); color: white; padding: 10px; border-radius: 10px; min-width: 60px; }
     .time-box span { font-size: 1.2rem; font-weight: 900; }
