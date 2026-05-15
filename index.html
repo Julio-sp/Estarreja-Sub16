@@ -495,15 +495,15 @@
 function showPlaylist() {
     showView('custom'); 
     
-    // Este é o link correto para o player funcionar (com /embed/)
+    // Link oficial da playlist EAC sub18 já configurado para o site
     const playlistEmbedUrl = "https://open.spotify.com/embed/playlist/06ejdeZNzhkBOSN5oaeKX3?utm_source=generator&theme=0";
 
     document.getElementById('viewContent').innerHTML = `
         <div style="text-align: center; animation: fadeIn 0.5s ease; padding: 10px;">
             <h2 style="font-weight:900; color:var(--eac-dark); margin-bottom:10px;">🎧 RITMO DE JOGO</h2>
-            <p style="color:#64748b; font-size:0.85rem; margin-bottom:20px; font-weight:600;">A nossa vibe oficial para o balneário e viagens!</p>
+            <p style="color:#64748b; font-size:0.85rem; margin-bottom:20px; font-weight:600;">A vibe oficial das nossas Sub18! 💚🤍</p>
             
-            <div style="border-radius:25px; overflow:hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.2); max-width: 450px; margin: 0 auto; background: #000; min-height: 450px;">
+            <div style="border-radius:25px; overflow:hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.2); max-width: 450px; margin: 0 auto; background: #000; min-height: 452px;">
                 <iframe 
                     style="border-radius:12px" 
                     src="${playlistEmbedUrl}" 
