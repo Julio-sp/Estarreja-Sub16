@@ -253,17 +253,20 @@
 }
 
 function buildConvocatoriaList(idJogo) {
-    const convocadasRaw = DB.convocados.filter(c => getVal(c, 'id_jogo') == idJogo);
+    // CORREÇÃO: Alterado de 'id_jogo' para 'jogo_id' para bater certo com o teu Google Sheets
+    const convocadasRaw = DB.convocados.filter(c => getVal(c, 'jogo_id') == idJogo);
     if (convocadasRaw.length === 0) return "";
     
     let listaFinal = convocadasRaw.map(c => {
         const info = DB.atletas.length > 0 ? DB.atletas.find(at => clean(getVal(at, 'nome')) === clean(getVal(c, 'nome'))) : null;
         return {
+            // Se existir nome_exibicao usa, se não, usa o primeiro nome do campo 'nome'
             nome: getVal(c, 'nome_exibicao') || getVal(c, 'nome').split(' ')[0],
             num: info ? parseInt(getVal(info, 'número')) : 999
         };
     });
     
+    // Ordena as atletas pelo número da camisola
     listaFinal.sort((a, b) => a.num - b.num);
     
     const itemsHTML = listaFinal.map(a => `
@@ -279,7 +282,6 @@ function buildConvocatoriaList(idJogo) {
             <div class="conv-list">${itemsHTML}</div>
         </div>`;
 }
-
 function renderJogos(filtro) {
     document.getElementById('filterArea').innerHTML = ['TODOS', 'SUB16', 'SUB18'].map(b => 
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderJogos('${b}')">${b}</button>`).join('');
