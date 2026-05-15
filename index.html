@@ -382,14 +382,16 @@ function openAtleta(nome, escalaoFiltro = '') {
     let sc = DB.scout.filter(s => {
         const matchesNome = clean(getVal(s, 'nome')) === clean(nome);
         if (!matchesNome) return false;
-        if (!escalaoFiltro) return true;
+        if (!escalaoFiltro || clean(escalaoFiltro) === 'geral') return true;
         const jogo = DB.jogos.find(j => getVal(j, 'id') == getVal(s, 'jogo_id'));
-        return j && clean(getVal(jogo, 'escalao')) === clean(escalaoFiltro);
+        // CORREÇÃO: Alterado de 'j' para 'jogo' para coincidir com a variável definida acima
+        return jogo && clean(getVal(jogo, 'escalao')) === clean(escalaoFiltro);
     });
 
     sc.sort((x, y) => {
         const jogoX = DB.jogos.find(jg => getVal(jg, 'id') == getVal(x, 'jogo_id'));
         const jogoY = DB.jogos.find(jg => getVal(jg, 'id') == getVal(y, 'jogo_id'));
+        if (!jogoX || !jogoY) return 0;
         return parseDate(getVal(jogoY, 'data')) - parseDate(getVal(jogoX, 'data'));
     });
 
@@ -400,9 +402,9 @@ function openAtleta(nome, escalaoFiltro = '') {
     const formatHistList = (lista, campo) => {
         const filtrada = campo === 'jogos' ? lista : lista.filter(s => parseInt(getVal(s, campo)) > 0);
         return filtrada.map(s => {
-            const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
+            const jg = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
             const val = campo === 'jogos' ? '✔' : getVal(s, campo);
-            return `<div class="history-item"><span><b>vs</b> ${getVal(j, 'adversário') || 'Jogo'}</span> <b>${val}</b></div>`;
+            return `<div class="history-item"><span><b>vs</b> ${jg ? getVal(jg, 'adversário') : 'Jogo'}</span> <b>${val}</b></div>`;
         }).join('') || '<div class="history-item">Nenhum registro.</div>';
     };
 
@@ -443,7 +445,7 @@ function openAtleta(nome, escalaoFiltro = '') {
 }
 
 function renderArt(filtro) {
-    document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => 
+    document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b =>  
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderArt('${b}')">${b}</button>`).join('');
     let atletasUnicos = new Map();
     DB.atletas.forEach(atleta => {
@@ -460,7 +462,7 @@ function renderArt(filtro) {
         return { ...atleta, golos };
     }).filter(x => x.golos > 0).sort((a,b) => b.golos - a.golos);
     document.getElementById('viewContent').innerHTML = ranking.map((p, i) => `
-        <div class="atleta-row" onclick="openAtleta('${p.nome}', '${filtro === 'GERAL' ? '' : filtro}')">
+        <div class="atleta-row" onclick="openAtleta('${p.nome}', '${filtro}')">
             <div style="font-weight:900; font-size:1.2rem; margin-right:15px; color:var(--azul)">${i+1}º</div>
             <img src="${p.foto || 'logo.png'}" class="atleta-img-circle" style="width:45px; height:45px" onerror="this.src='logo.png'">
             <div style="flex:1"><strong style="display:block">${p.nome}</strong><span style="font-size:0.7rem; color:#64748b; font-weight:800">🎽 Nº ${p.num}</span></div>
@@ -469,7 +471,7 @@ function renderArt(filtro) {
 }
 
 function renderParticipacoes(filtro) {
-    document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b => 
+    document.getElementById('filterArea').innerHTML = ['GERAL', 'SUB16', 'SUB18'].map(b =>  
         `<button class="tab-btn ${filtro===b?'active':''}" onclick="renderParticipacoes('${b}')">${b}</button>`).join('');
     let atletasUnicos = new Map();
     DB.atletas.forEach(atleta => {
@@ -486,14 +488,13 @@ function renderParticipacoes(filtro) {
         return { ...atleta, totalJogos };
     }).filter(x => x.totalJogos > 0).sort((a,b) => b.totalJogos - a.totalJogos);
     document.getElementById('viewContent').innerHTML = ranking.map((p, i) => `
-        <div class="atleta-row" onclick="openAtleta('${p.nome}', '${filtro === 'GERAL' ? '' : filtro}')">
+        <div class="atleta-row" onclick="openAtleta('${p.nome}', '${filtro}')">
             <div style="font-weight:900; font-size:1.2rem; margin-right:15px; color:var(--verde)">${i+1}º</div>
             <img src="${p.foto || 'logo.png'}" class="atleta-img-circle" style="width:45px; height:45px" onerror="this.src='logo.png'">
             <div style="flex:1"><strong style="display:block">${p.nome}</strong><span style="font-size:0.7rem; color:#64748b; font-weight:800">🎽 Nº ${p.num}</span></div>
             <div style="font-weight:900; font-size:1.1rem; color:var(--eac-dark)">${p.totalJogos} <span style="font-size:0.7rem; font-weight:600">JOGOS</span></div>
         </div>`).join('') || "<p style='text-align:center; padding:20px'>Nenhum jogo registado.</p>";
 }
-
 function renderTreinos() {
     document.getElementById('viewContent').innerHTML = `
         <h2 style="font-weight:900; margin-bottom:25px">📍 Locais de Treino</h2>
