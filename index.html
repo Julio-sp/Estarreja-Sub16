@@ -251,22 +251,34 @@
         console.error("Erro no carregamento:", e);
     }
 }
-
 function buildConvocatoriaList(idJogo) {
-    // CORREÇÃO: Alterado de 'id_jogo' para 'jogo_id' para bater certo com o teu Google Sheets
-    const convocadasRaw = DB.convocados.filter(c => getVal(c, 'jogo_id') == idJogo);
+    if (!DB.convocados || DB.convocados.length === 0) return "";
+
+    // IDs limpos de espaços e comparados de forma segura
+    const idJogoLimpo = String(idJogo).trim();
+
+    const convocadasRaw = DB.convocados.filter(c => {
+        // Procura pela coluna 'jogo_id' ignorando maiúsculas/minúsculas e espaços
+        const jogoIdPlanilha = getVal(c, 'jogo_id') || getVal(c, 'Jogo_id') || getVal(c, 'JOGO_ID');
+        return String(jogoIdPlanilha).trim() === idJogoLimpo;
+    });
+
     if (convocadasRaw.length === 0) return "";
     
     let listaFinal = convocadasRaw.map(c => {
-        const info = DB.atletas.length > 0 ? DB.atletas.find(at => clean(getVal(at, 'nome')) === clean(getVal(c, 'nome'))) : null;
+        const nomeConvocada = clean(getVal(c, 'nome'));
+        const info = DB.atletas && DB.atletas.length > 0 
+            ? DB.atletas.find(at => clean(getVal(at, 'nome')) === nomeConvocada) 
+            : null;
+            
         return {
-            // Se existir nome_exibicao usa, se não, usa o primeiro nome do campo 'nome'
-            nome: getVal(c, 'nome_exibicao') || getVal(c, 'nome').split(' ')[0],
+            // Vai buscar o nome_exibicao (ou variações de maiúsculas)
+            nome: getVal(c, 'nome_exibicao') || getVal(c, 'Nome_Exibicao') || getVal(c, 'nome').split(' ')[0],
             num: info ? parseInt(getVal(info, 'número')) : 999
         };
     });
     
-    // Ordena as atletas pelo número da camisola
+    // Ordena por número
     listaFinal.sort((a, b) => a.num - b.num);
     
     const itemsHTML = listaFinal.map(a => `
