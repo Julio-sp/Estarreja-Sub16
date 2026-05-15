@@ -466,4 +466,29 @@
     const isVisible = el.style.display === 'block';
     document.querySelectorAll('.history-panel').forEach(p => p.style.display = 'none');
     el.style.display = isVisible ? 'none' : 'block'; 
-}function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }function toggleSub(id) { document.getElementById(id).classList.toggle('open'); }function closeDetail() { document.getElementById('detailPane').classList.remove('open'); }function handleLogin() { if(prompt("Senha:") === "eac2026") { document.getElementById('menu-artilharia').style.display='block'; document.getElementById('lock-btn').innerText="🔓"; } }window.onload = loadData;</script></body></html>
+}function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }function toggleSub(id) { document.getElementById(id).classList.toggle('open'); }function closeDetail() { document.getElementById('detailPane').classList.remove('open'); } function showAcademy(tipo) {
+    showView('custom'); 
+    const baseURL = "https://raw.githubusercontent.com/Julio-sp/InfoBaseFem/main/fotos/";
+    const dados = {
+        'prevencao': { tit: 'Prevenção', img: 'Prevencao.jpg', desc: 'Ativação e estabilidade para proteger as tuas articulações.' },
+        'recuperacao': { tit: 'Recuperação', img: 'Recuperacao.jpg', desc: 'Protocolos essenciais para estares a 100% no próximo treino.' },
+        'treino-invisivel': { tit: 'Treino invisivel.jpg', img: 'Treino%20invisivel.jpg', desc: 'O que fazes fora de campo determina o teu nível em campo.' },
+        'pos-treino': { tit: 'Pós-Treino', img: 'pos%20treino.jpg', desc: 'Acelera a regeneração muscular após o esforço intenso.' },
+        'pre-jogo': { tit: 'Pré-Jogo', img: 'pre%20jogo.jpg', desc: 'Foco total e energia certa para o momento da decisão.' },
+        'intervalo': { tit: 'Intervalo', img: 'intervalo.jpg', desc: 'Recarga rápida para manter a intensidade na 2ª parte.' }
+    };
+    const item = dados[tipo];
+    document.getElementById('viewContent').innerHTML = `
+        <div style="text-align: center; animation: fadeIn 0.5s ease; padding: 10px;">
+            <h2 style="font-weight:900; color:var(--eac-dark); margin-bottom:20px;">${item.tit.toUpperCase()}</h2>
+            <div style="background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 12px 30px rgba(0,0,0,0.12); border: 1px solid #e2e8f0; max-width: 450px; margin: 0 auto;">
+                <img src="${baseURL}${item.img}" style="width: 100%; display: block;" onerror="this.src='logo.png'">
+                <div style="padding: 20px; background: #f8fafc;">
+                    <p style="color: #475569; font-weight: 600; line-height: 1.5; margin: 0; font-size: 0.9rem;">${item.desc}</p>
+                </div>
+            </div>
+            <button onclick="showView('home')" style="margin-top: 30px; padding: 15px 35px; border-radius: 50px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer; font-size: 0.8rem;">
+                ⬅ VOLTAR AO INÍCIO
+            </button>
+        </div>`;
+}function handleLogin() { if(prompt("Senha:") === "eac2026") { document.getElementById('menu-artilharia').style.display='block'; document.getElementById('lock-btn').innerText="🔓"; } }window.onload = loadData;</script></body></html>
