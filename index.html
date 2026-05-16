@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="pt"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sub16 e Sub18 FEM</title>
+    <title>EAC - Sub16 e Sub18 FEM</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --verde: #16a34a; --vermelho: #ef4444; --azul: #1e40af; --bg: #f1f5f9; --eac-dark: #0f172a; }
@@ -151,29 +151,18 @@
     <div class="adn-word w-white">COMPROMISSO</div>
     <div class="adn-word w-black">UNIÃO</div>
 </div>
-<!-- Este bloco DEVE estar na sua tela inicial (Home) -->
+ <!-- Este bloco DEVE estar na sua tela inicial (Home) -->
 <div id="next-game-container" style="display: none; margin: 20px; padding: 20px; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-left: 8px solid var(--verde);">
     <div style="text-align: center;">
-        <span style="color: var(--verde); font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;">Contagem Decrescente</span>
-        <h2 style="margin: 10px 0; font-size: 1.2rem; font-weight: 900;">Tempo até ao próximo jogo</h2>
+        <span style="color: var(--verde); font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;">Próximo Desafio</span>
+        <h2 style="margin: 10px 0; font-size: 1.2rem; font-weight: 900;">EAC vs AD VACARIÇA</h2>
         
-        <!-- O CONTADOR -->
+        <!-- O CONTADOR (O JS vai escrever aqui dentro) -->
         <div id="countdown" style="display: flex; justify-content: center; gap: 15px; margin: 15px 0;">
             <div class="time-box"><span id="days">00</span><small>Dias</small></div>
             <div class="time-box"><span id="hours">00</span><small>Horas</small></div>
             <div class="time-box"><span id="mins">00</span><small>Min</small></div>
         </div>
-
-        <div style="background: #f8fafc; padding: 10px; border-radius: 12px; margin-top: 10px;">
-            <p style="margin: 0; font-size: 0.85rem; font-weight: 700;">📅 Domingo, 17 de Maio - 16:00h</p>
-        </div>
-
-        <!-- BOTÃO PARA A CONVOCATÓRIA -->
-        <button onclick="irParaConvocados()" style="margin-top: 15px; width: 100%; padding: 12px; border-radius: 12px; border: none; background: var(--eac-dark); color: white; font-weight: 800; cursor: pointer;">
-            VER CONVOCATÓRIA
-        </button>
-    </div>
-</div>
 
         <div style="background: #f8fafc; padding: 10px; border-radius: 12px; margin-top: 10px;">
             <p style="margin: 0; font-size: 0.85rem; font-weight: 700;">📅 Domingo, 17 de Maio - 16:00h</p>
@@ -395,6 +384,7 @@ function openAtleta(nome, escalaoFiltro = '') {
         if (!matchesNome) return false;
         if (!escalaoFiltro || clean(escalaoFiltro) === 'geral') return true;
         const jogo = DB.jogos.find(j => getVal(j, 'id') == getVal(s, 'jogo_id'));
+        // CORREÇÃO: Alterado de 'j' para 'jogo' para coincidir com a variável definida acima
         return jogo && clean(getVal(jogo, 'escalao')) === clean(escalaoFiltro);
     });
 
@@ -505,7 +495,6 @@ function renderParticipacoes(filtro) {
             <div style="font-weight:900; font-size:1.1rem; color:var(--eac-dark)">${p.totalJogos} <span style="font-size:0.7rem; font-weight:600">JOGOS</span></div>
         </div>`).join('') || "<p style='text-align:center; padding:20px'>Nenhum jogo registado.</p>";
 }
-
 function renderTreinos() {
     document.getElementById('viewContent').innerHTML = `
         <h2 style="font-weight:900; margin-bottom:25px">📍 Locais de Treino</h2>
@@ -528,10 +517,6 @@ function renderHomeNext() {
     document.getElementById('homeNextContent').innerHTML = proximos.map(j => {
         const isFora = clean(getVal(j, 'local')).includes("fora");
         const mapsLink = getVal(j, 'Link_maps');
-        
-        // Proteção caso a função buildConvocatoriaList não esteja definida
-        const convocatoriaHTML = typeof buildConvocatoriaList === 'function' ? buildConvocatoriaList(getVal(j, 'id')) : '';
-
         return `
         <div class="game-card" style="border-left: 6px solid var(--azul); flex-direction:column">
             <div class="game-content" style="padding: 15px;">
@@ -545,7 +530,7 @@ function renderHomeNext() {
                     <span style="font-size: 0.75rem; color: #64748b; font-weight: 700;">📍 ${getVal(j, 'local')}</span>
                     ${mapsLink ? `<a href="${mapsLink}" target="_blank" style="font-size:0.7rem; color:var(--verde); font-weight:800; text-decoration:none">VER NO MAPA ↗</a>` : ''}
                 </div>
-                ${convocatoriaHTML}
+                ${buildConvocatoriaList(getVal(j, 'id'))}
             </div>
         </div>`;
     }).join('') || "<p style='color:#94a3b8; text-align:center;'>Sem jogos marcados.</p>";
@@ -563,10 +548,7 @@ function showNiver(m) {
         const mPart = getVal(a, 'nascimento').split('/');
         if(mPart.length < 2) return false;
         const mesNasc = parseInt(mPart[1]);
-        if (mesNasc === m && !nomesVistos.has(clean(getVal(a, 'nome')))) { 
-            nomesVistos.add(clean(getVal(a, 'nome'))); 
-            return true; 
-        }
+        if (mesNasc === m && !nomesVistos.has(clean(getVal(a, 'nome')))) { nomesVistos.add(clean(getVal(a, 'nome'))); return true; }
         return false;
     }).sort((a, b) => parseInt(getVal(a, 'nascimento').split('/')[0]) - parseInt(getVal(b, 'nascimento').split('/')[0]));
     
@@ -580,57 +562,18 @@ function showNiver(m) {
 }
 
 function showView(v, p = '') {
-    // 1. Fecha o menu lateral caso esteja aberto em telemóveis
     if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
-    
-    // 2. ESCONDE ABSOLUTAMENTE TUDO primeiro para limpar o ecrã
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-    
-    // Se tiveres contentores principais com outras classes ou IDs específicos para a Home,
-    // garantimos que a home e os seus blocos ficam completamente escondidos:
-    if(document.getElementById('home')) {
-        document.getElementById('home').style.display = 'none';
-        document.getElementById('home').classList.remove('active');
-    }
-    if(document.getElementById('mainView')) {
-        document.getElementById('mainView').style.display = 'none';
-        document.getElementById('mainView').classList.remove('active');
-    }
-    
-    // 3. Limpa os conteúdos dinâmicos das vistas secundárias para não acumular lixo
-    if(document.getElementById('viewContent')) document.getElementById('viewContent').innerHTML = ""; 
-    if(document.getElementById('filterArea')) document.getElementById('filterArea').innerHTML = "";
-
-    // 4. MOSTRA APENAS a secção pretendida
-    if(v === 'home') { 
-        const homeEl = document.getElementById('home');
-        if(homeEl) {
-            homeEl.style.display = 'block';
-            homeEl.classList.add('active'); 
-        }
-        renderHomeNext(); 
-    } else if(v === 'custom') {
-        const mainEl = document.getElementById('mainView');
-        if(mainEl) {
-            mainEl.style.display = 'block';
-            mainEl.classList.add('active');
-        }
-    } else { 
-        const mainEl = document.getElementById('mainView');
-        if(mainEl) {
-            mainEl.style.display = 'block';
-            mainEl.classList.add('active'); 
-        }
-        
-        // Executa a renderização da secção correta
+    document.getElementById('viewContent').innerHTML = ""; document.getElementById('filterArea').innerHTML = "";
+    if(v === 'home') { document.getElementById('home').classList.add('active'); renderHomeNext(); }
+    else { 
+        document.getElementById('mainView').classList.add('active'); 
         if(v === 'jogos') renderJogos('TODOS'); 
         else if(v === 'atletas') renderAtletas(p); 
         else if(v === 'artilharia') renderArt('GERAL');
         else if(v === 'participacoes') renderParticipacoes('GERAL');
         else if(v === 'treinos') renderTreinos();
     }
-    
-    // 5. Atira o ecrã para o topo para a nova secção começar do início
     window.scrollTo(0,0);
 }
 
@@ -728,37 +671,9 @@ styleFrase.innerHTML = `
 `;
 document.head.appendChild(styleFrase);
 
-// === CORREÇÃO: FUNÇÃO DO CONTADOR REGRESSIVO TOTALMENTE RECONSTRUÍDA ===
-function ativarContadorJogo() {
-    const dataJogo = new Date("2026-05-17T16:00:00").getTime();
-
-    const intervalo = setInterval(() => {
-        const agora = new Date().getTime();
-        const diferenca = dataJogo - agora;
-
-        if (diferenca < 0) {
-            clearInterval(intervalo);
-            const countdownEl = document.getElementById("countdown");
-            if (countdownEl) {
-                countdownEl.innerHTML = "<span style='color: var(--verde); font-weight: bold; font-size: 1.1rem;'>⏱️ O jogo já começou!</span>";
-            }
-            return;
-        }
-
-        const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
-        const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
-
-        if (document.getElementById("days")) document.getElementById("days").innerText = dias.toString().padStart(2, '0');
-        if (document.getElementById("hours")) document.getElementById("hours").innerText = horas.toString().padStart(2, '0');
-        if (document.getElementById("mins")) document.getElementById("mins").innerText = minutos.toString().padStart(2, '0');
-    }, 1000);
-}
-
-// === INICIALIZAÇÃO ===
 window.onload = () => {
     loadData();
-    ativarContadorJogo(); 
+    // Espera 2 segundos após o site abrir para mostrar a frase (dá um efeito mais profissional)
     setTimeout(mostrarFraseInspiradora, 2000); 
 };
 </script>
