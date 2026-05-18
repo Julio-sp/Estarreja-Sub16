@@ -439,6 +439,15 @@ function openAtleta(nome, escalaoFiltro = '') {
         }).join('') || '<div class="history-item">Nenhum registro.</div>';
     };
 
+    // Aplica o emoji 🟥 diretamente na lista de jogadoras do jogo atual
+    sc.forEach(v => {
+        const vermelhoAtleta = parseInt(getVal(v, 'vermelhos')) || 0;
+        if (vermelhoAtleta > 0) {
+            const elementoGolos = document.querySelector(`[data-atleta="${getVal(v, 'atleta')}"] .badges`) || null;
+            if (elementoGolos) elementoGolos.innerHTML += ' 🟥';
+        }
+    });
+
     document.getElementById('detailBody').innerHTML = `
         <div style="background: linear-gradient(180deg, #f8fafc 0%, white 100%); padding: 45px 20px; text-align:center">
             <img src="${getVal(a, 'foto') || 'logo.png'}" class="atleta-img-circle" style="width:130px; height:130px; border: 6px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.1)" onerror="this.src='logo.png'">
