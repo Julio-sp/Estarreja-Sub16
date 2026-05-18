@@ -420,14 +420,22 @@ function openAtleta(nome, escalaoFiltro = '') {
 
     const totalG = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'golos')) || 0), 0);
     const totalE = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'exclusoes')) || 0), 0);
+    const totalV = sc.reduce((acc, v) => acc + (parseInt(getVal(v, 'vermelhos')) || 0), 0); // Adicionado aqui
     const totalJ = sc.length;
 
     const formatHistList = (lista, campo) => {
+        // Se o campo for 'vermelhos', filtramos quem tem mais de 0 cartões vermelhos
         const filtrada = campo === 'jogos' ? lista : lista.filter(s => parseInt(getVal(s, campo)) > 0);
         return filtrada.map(s => {
-            const jg = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
-            const val = campo === 'jogos' ? '✔' : getVal(s, campo);
-            return `<div class="history-item"><span><b>vs</b> ${jg ? getVal(jg, 'adversário') : 'Jogo'}</span> <b>${val}</b></div>`;
+            const j = DB.jogos.find(jg => getVal(jg, 'id') == getVal(s, 'jogo_id'));
+            
+            // Define o que vai aparecer no histórico: se for vermelho, mostra o emoji 🟥
+            let val = campo === 'jogos' ? '✔' : getVal(s, campo);
+            if (campo === 'vermelhos' && parseInt(val) > 0) {
+                val = '🟥';
+            }
+            
+            return `<div class="history-item"><span><b>vs</b> ${getVal(j, 'adversário') || 'Jogo'}</span> <b>${val}</b></div>`;
         }).join('') || '<div class="history-item">Nenhum registro.</div>';
     };
 
